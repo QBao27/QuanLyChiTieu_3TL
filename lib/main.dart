@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,11 +11,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'QuanLyChiTieu3TL',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
-        home:
+      title: 'QuanLyChiTieu_3TL',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: const MyHomePage(),
     );
   }
 }
