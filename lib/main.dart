@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'views/ThongKe.dart';
+import 'views/DangNhap.dart';
 
 void main() {
   runApp(const MyApp());
