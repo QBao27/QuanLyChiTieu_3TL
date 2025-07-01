@@ -17,7 +17,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'QuanLyChiTieu_3TL',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
       ),
       home: HomePage(),
     );
@@ -42,16 +41,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Quản Lý Chi Tiêu', style: TextStyle(color: Colors.white),),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-      ),
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.yellow[700],
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           setState(() {
