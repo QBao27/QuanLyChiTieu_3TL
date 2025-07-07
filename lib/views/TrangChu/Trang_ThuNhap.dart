@@ -1,25 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Thêm Thu Nhập',
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Thêm Thu Nhập')),
-        body: const ThemThuNhap(),
-      ),
-    );
-  }
-}
-
 class ThemThuNhap extends StatefulWidget {
   const ThemThuNhap({super.key});
 
@@ -45,39 +26,48 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8),
-      child: SingleChildScrollView(child: Column(
-        children: List.generate(7, (row) {
-          final start = row * 4;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              children: List.generate(4, (col) {
-                final index = start + col;
-                final iconList = [
-                  Icons.shopping_cart_outlined, Icons.restaurant_outlined,
-                  Icons.phone_android_outlined, Icons.headset_mic_rounded,
-                  Icons.book_online, Icons.brush_outlined,
-                  Icons.directions_bike_outlined, Icons.people_alt_outlined,
-                  Icons.more_horiz_outlined,
-                ];
-                final labelList = [
-                  'Mua sắm', 'Đồ ăn', 'Điện thoại', 'Giải trí',
-                  'Giáo dục', 'Sắc đẹp', 'Thể thao', 'Xã hội',
-                  'Khác',
-                ];
-                return index < iconList.length
-                    ? buildIconButton(index, iconList[index], labelList[index])
-                    : const Expanded(child: SizedBox());
-              }),
-            ),
-          );
-        }),
-      ),)
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+      child: SingleChildScrollView(
+        child: Column(
+          children: List.generate(7, (row) {
+            final start = row * 4;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: List.generate(4, (col) {
+                  final index = start + col;
+                  final iconList = [
+                    Icons.attach_money,
+                    Icons.trending_up_outlined,
+                    Icons.card_giftcard_outlined,
+                    Icons.money_outlined,
+                    Icons.work_history_outlined,
+                    Icons.more_horiz_outlined,
+                  ];
+                  final labelList = [
+                    'Lương',
+                    'Đầu tư',
+                    'Giải thưởng',
+                    'Lì xì',
+                    'Làm thêm',
+                    'Khác',
+                  ];
+                  return index < iconList.length
+                      ? buildIconButton(
+                          index,
+                          iconList[index],
+                          labelList[index],
+                        )
+                      : const Expanded(child: SizedBox());
+                }),
+              ),
+            );
+          }),
+        ),
+      ),
     );
   }
 
@@ -117,7 +107,9 @@ class _CustomKeyboardSheet extends StatefulWidget {
 class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
   String amount = '0';
   final _noteCtr = TextEditingController();
-  final currencyFormat = NumberFormat.decimalPattern('vi'); // Sử dụng định dạng VN
+  final currencyFormat = NumberFormat.decimalPattern(
+    'vi',
+  ); // Sử dụng định dạng VN
 
   void _append(String x) {
     String clean = amount.replaceAll('.', '');
@@ -180,7 +172,10 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                 // Hiển thị số tiền canh phải
                 Text(
                   amount,
-                  style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -211,10 +206,20 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                 crossAxisSpacing: 8,
                 children: [
                   for (var k in [
-                    '7', '8', '9', '⌫',
-                    '4', '5', '6', '✓',
-                    '1', '2', '3', '0',
-                  ]) _buildKey(k),
+                    '7',
+                    '8',
+                    '9',
+                    '⌫',
+                    '4',
+                    '5',
+                    '6',
+                    '✓',
+                    '1',
+                    '2',
+                    '3',
+                    '0',
+                  ])
+                    _buildKey(k),
                 ],
               ),
             ),
@@ -242,16 +247,12 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
         }
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: isCheck
-            ? Colors.yellow[700]
-            : Colors.grey[200],
+        backgroundColor: isCheck ? Colors.yellow[700] : Colors.grey[200],
         foregroundColor: Colors.black,
         textStyle: const TextStyle(fontSize: 22),
         minimumSize: const Size(50, 50),
         padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       child: isCheck
           ? const Icon(Icons.check, size: 32, color: Colors.black)

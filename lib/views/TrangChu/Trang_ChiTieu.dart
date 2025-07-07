@@ -1,25 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Thêm Chi Tiêu',
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Thêm Chi Tiêu')),
-        body: const ThemChiTieu(),
-      ),
-    );
-  }
-}
-
 class ThemChiTieu extends StatefulWidget {
   const ThemChiTieu({super.key});
 
@@ -47,14 +28,14 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
       child: SingleChildScrollView(
         child: Column(
           children: List.generate(7, (row) {
             final start = row * 4;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
               child: Row(
                 children: List.generate(4, (col) {
                   final index = start + col;
@@ -120,10 +101,10 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
                   ];
                   return index < iconList.length
                       ? buildIconButton(
-                          index,
-                          iconList[index],
-                          labelList[index],
-                        )
+                    index,
+                    iconList[index],
+                    labelList[index],
+                  )
                       : const Expanded(child: SizedBox());
                 }),
               ),

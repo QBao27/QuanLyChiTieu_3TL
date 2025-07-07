@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Trang_ChiTieu.dart';
 import 'Trang_ThuNhap.dart';
+import 'Trang_DanhSach.dart';
 
 class TrangChu extends StatefulWidget {
   const TrangChu({super.key});
@@ -14,7 +15,7 @@ class _TrangChuState extends State<TrangChu> {
 
   // Danh sách các giao diện tương ứng
   final List<Widget> pages = [
-    Center(child: Text("Giao diện Danh sách", style: TextStyle(fontSize: 24))),
+    const DanhSach(),
     const ThemThuNhap(),
     const ThemChiTieu(),
   ];
@@ -25,7 +26,7 @@ class _TrangChuState extends State<TrangChu> {
       appBar: AppBar(
         title: const Text(
           'Quản Lý Chi Tiêu',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         centerTitle: true,
         backgroundColor: Colors.yellow[700],
@@ -37,7 +38,7 @@ class _TrangChuState extends State<TrangChu> {
             decoration: BoxDecoration(
               color: Colors.yellow[700]
             ),
-            padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
+            padding: const EdgeInsets.only(bottom: 10, right: 20, left: 20),
             child: Row(
               children: [
                 // Nút 0: Danh sách
@@ -69,7 +70,7 @@ class _TrangChuState extends State<TrangChu> {
                           bottomLeft: Radius.circular(12),
                         ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
                   ),
                 ),
@@ -100,7 +101,7 @@ class _TrangChuState extends State<TrangChu> {
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.zero,
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
                   ),
                 ),
@@ -134,7 +135,7 @@ class _TrangChuState extends State<TrangChu> {
                           bottomRight: Radius.circular(12),
                         ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
                   ),
                 ),
@@ -145,7 +146,6 @@ class _TrangChuState extends State<TrangChu> {
           // Nội dung bên dưới theo tab đã chọn
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(16),
               child: pages[selectedIndex],
             ),
           ),
