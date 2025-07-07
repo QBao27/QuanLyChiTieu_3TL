@@ -3,8 +3,15 @@ import 'views/TrangChu/TrangChu.dart';
 import 'views/ThongKe/ThongKe.dart';
 import 'views/Lich/Lich.dart';
 import 'views/TaiKhoan/TaiKhoan.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // khởi tạo data format cho tất cả locales (nếu bạn muốn dùng nhiều locale)
+  await initializeDateFormatting();
+  // hoặc chỉ riêng vi: await initializeDateFormatting('vi', null);
   runApp(const MyApp());
 }
 
@@ -17,7 +24,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'QuanLyChiTieu_3TL',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
       ),
       home: HomePage(),
     );
@@ -25,6 +31,8 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -46,7 +54,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.yellow[700],
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           setState(() {
