@@ -27,7 +27,7 @@ class _DanhSachState extends State<DanhSach> {
         {
           'icon': Icons.category,
           'title': 'Khác',
-          'amount': 8,
+          'amount': 10000000008,
           'note': null
         },
         {
@@ -39,7 +39,7 @@ class _DanhSachState extends State<DanhSach> {
       ],
     },
     {
-      'date': DateTime(2025, 6, 24),
+      'date': DateTime(2025, 7, 6),
       'items': [
         {
           'icon': Icons.payments,
@@ -62,24 +62,24 @@ class _DanhSachState extends State<DanhSach> {
       ],
     },
     {
-      'date': DateTime(2025, 6, 20),
+      'date': DateTime(2025, 7, 6),
       'items': [
         {
           'icon': Icons.phone_iphone,
           'title': 'Điện thoại',
-          'amount': -1000000,
+          'amount': -30000,
           'note': 'Mua ốp lưng'
         },
         {
           'icon': Icons.payments,
           'title': 'Lương',
-          'amount': 6000000,
+          'amount': 5000000,
           'note': 'Lương tháng 6'
         },
         {
           'icon': Icons.shopping_cart,
           'title': 'Mua sắm',
-          'amount': -1000000000,
+          'amount': -20000,
           'note': 'Mua đồ dùng'
         },
       ],
@@ -169,13 +169,13 @@ class _DanhSachState extends State<DanhSach> {
                         children: [
                           Text(
                             formatterDate.format(date),
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 8),
                           Flexible(
                             child: Text(
                               formatterWeekday.format(date),
-                              style: const TextStyle(color: Colors.grey, fontSize: 12),
+                              style: const TextStyle(color: Colors.grey, fontSize: 14),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -183,17 +183,18 @@ class _DanhSachState extends State<DanhSach> {
                           Flexible(
                             flex: 0,
                             child: Row(
-                              mainAxisSize: MainAxisSize.min,
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
-                                  'Chi tiêu: ${formatterNumber.format(-sumChi)}',
-                                  style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+                                  '- ${formatterNumber.format(-sumChi)}',
+                                  style: const TextStyle(color: Colors.redAccent, fontSize: 14),
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 12),
                                 Text(
-                                  'Thu nhập: ${formatterNumber.format(sumThu)}',
-                                  style: const TextStyle(color: Colors.green, fontSize: 12),
+                                  '+ ${formatterNumber.format(sumThu)}',
+                                  style: const TextStyle(color: Colors.green, fontSize: 14),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],

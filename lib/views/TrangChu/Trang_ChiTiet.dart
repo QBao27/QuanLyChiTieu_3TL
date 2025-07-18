@@ -3,11 +3,11 @@ import 'package:intl/intl.dart';
 
 class DetailPage extends StatefulWidget {
   final String title;
-  final String type;          // "Chi tiêu" hoặc "Thu nhập"
-  final int amount;           // số tiền ban đầu
-  final DateTime date;        // ngày
-  final IconData icon;        // icon giao dịch
-  final String note;          // ghi chú
+  final String type;
+  final int amount;
+  final DateTime date;
+  final IconData icon;
+  final String note;
 
   DetailPage({
     Key? key,
@@ -27,7 +27,7 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
   late int _currentAmount;
   late TextEditingController _noteController;
-  final _formatterDate   = DateFormat('d MMM, y', 'vi_VN');
+  final _formatterDate = DateFormat('d MMM, y', 'vi_VN');
   final _formatterNumber = NumberFormat('#,##0', 'vi_VN');
 
   @override
@@ -71,7 +71,6 @@ class _DetailPageState extends State<DetailPage> {
             _currentAmount = newAmount;
             _noteController.text = newNote;
           });
-          // TODO: Lưu thay đổi vào database nếu cần
         },
       ),
     );
@@ -109,8 +108,6 @@ class _DetailPageState extends State<DetailPage> {
                 ],
               ),
             ),
-
-            // Nội dung chi tiết
             Expanded(
               child: Container(
                 color: Colors.white,
@@ -139,7 +136,6 @@ class _DetailPageState extends State<DetailPage> {
           ],
         ),
       ),
-
       bottomNavigationBar: BottomAppBar(
         child: Row(
           children: [
@@ -176,9 +172,6 @@ class _DetailPageState extends State<DetailPage> {
   }
 }
 
-// =============================
-// Custom Keyboard Bottom Sheet
-// =============================
 class EditAmountKeyboard extends StatefulWidget {
   final int initialAmount;
   final String initialNote;
@@ -199,6 +192,7 @@ class _EditAmountKeyboardState extends State<EditAmountKeyboard> {
   String amount = '0';
   late TextEditingController _noteCtr;
   final currencyFormat = NumberFormat.decimalPattern('vi');
+  static const List<String> _keys = ['7', '8', '9', '⌫', '4', '5', '6', '✓', '1', '2', '3', '0'];
 
   @override
   void initState() {
@@ -215,7 +209,7 @@ class _EditAmountKeyboardState extends State<EditAmountKeyboard> {
 
   void _append(String x) {
     String clean = amount.replaceAll('.', '');
-    if (clean.length >= 9) return;
+    if (clean.length >= 10) return;
     clean = clean == '0' ? x : clean + x;
     setState(() {
       amount = currencyFormat.format(int.parse(clean)).replaceAll(',', '.');
@@ -236,71 +230,86 @@ class _EditAmountKeyboardState extends State<EditAmountKeyboard> {
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.5,
-      maxChildSize: 0.9,
-      builder: (_, ctrl) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Column(
-          children: [
-            // --- Header: Hủy & Số tiền ---
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[200],
-                    foregroundColor: Colors.black,
-                    textStyle: const TextStyle(fontSize: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: const Text('Hủy'),
-                ),
-                const Spacer(),
-                Text(
-                  amount,
-                  style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
+    final media = MediaQuery.of(context);
+    final screenWidth = media.size.width;
+    const int columns = 4;
+    const double spacing = 8;
+    const double paddingH = 16;
 
-            // --- TextField Ghi chú ---
-            TextField(
-              controller: _noteCtr,
-              decoration: InputDecoration(
-                hintText: 'Ghi chú: Nhập ghi chú...',
-                filled: true,
-                fillColor: Colors.grey[200],
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
+    final double totalSpacing = spacing * (columns - 1) + paddingH * 2;
+    final double keySize = (screenWidth - totalSpacing) / columns;
 
-            // --- Bàn phím số ---
-            Expanded(
-              child: GridView.count(
-                controller: ctrl,
-                crossAxisCount: 4,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
+    return SafeArea(
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        maxChildSize: 0.9,
+        builder: (_, ctrl) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: paddingH, vertical: 12).copyWith(bottom: paddingH),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  for (var k in ['7','8','9','⌫','4','5','6','✓','1','2','3','0'])
-                    _buildKey(k),
+                  ElevatedButton(
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[200],
+                      foregroundColor: Colors.black,
+                      textStyle: const TextStyle(fontSize: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('Hủy'),
+                  ),
+                  const Spacer(),
+                  Text(
+                    amount,
+                    style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              TextField(
+                controller: _noteCtr,
+                decoration: InputDecoration(
+                  hintText: 'Ghi chú: Nhập ghi chú...',
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: GridView.builder(
+                  controller: ctrl,
+                  padding: EdgeInsets.zero,
+                  itemCount: _keys.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columns,
+                    crossAxisSpacing: spacing,
+                    mainAxisSpacing: spacing,
+                    childAspectRatio: 1,
+                  ),
+                  itemBuilder: (_, idx) {
+                    final label = _keys[idx];
+                    return SizedBox(
+                      width: keySize,
+                      height: keySize,
+                      child: _buildKey(label),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -309,13 +318,11 @@ class _EditAmountKeyboardState extends State<EditAmountKeyboard> {
   Widget _buildKey(String label) {
     final isCheck = label == '✓';
     final isBackspace = label == '⌫';
-
     return ElevatedButton(
       onPressed: () {
         if (isBackspace) {
           _backspace();
         } else if (isCheck) {
-          // Xác nhận: gọi callback và đóng sheet
           final newAmount = int.parse(amount.replaceAll('.', ''));
           widget.onConfirm(newAmount, _noteCtr.text.trim());
           Navigator.of(context).pop();

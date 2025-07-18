@@ -157,7 +157,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
 
   void _append(String x) {
     String clean = amount.replaceAll('.', '');
-    if (clean.length >= 9) return; // giới hạn 9 chữ số
+    if (clean.length >= 10) return; // giới hạn 9 chữ số
     setState(() {
       clean = clean == '0' ? x : clean + x;
       amount = currencyFormat.format(int.parse(clean)).replaceAll(',', '.');
