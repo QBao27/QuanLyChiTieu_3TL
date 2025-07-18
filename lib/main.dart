@@ -1,12 +1,9 @@
+import 'package:appquanlychitieu/views/DangNhap.dart';
 import 'package:flutter/material.dart';
 import 'views/TrangChu/TrangChu.dart';
 import 'views/ThongKe/ThongKe.dart';
 import 'views/Lich/Lich.dart';
 import 'views/TaiKhoan/TaiKhoan.dart';
-import 'views/TaiKhoan/TaiKhoan.dart';
-import 'views/DangNhap.dart';
-import 'views/Quenmatkhau.dart';
-import 'views/DangKy.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -15,7 +12,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // khởi tạo data format cho tất cả locales (nếu bạn muốn dùng nhiều locale)
   await initializeDateFormatting();
-  // hoặc chỉ riêng vi: await initializeDateFormatting('v  runApp(const MyApp());
+  // hoặc chỉ riêng vi: await initializeDateFormatting('vi', null);
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -27,15 +25,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'QuanLyChiTieu_3TL',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
       ),
-      home: HomePage(),
+      home: LoginScreen(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -47,22 +45,17 @@ class _HomePageState extends State<HomePage> {
     TrangChu(),
     ThongKe(),
     Lich(),
-    TaiKhoan()
+    Dangnhap()
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Quản Lý Chi Tiêu', style: TextStyle(color: Colors.white),),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-      ),
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.yellow[700],
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           setState(() {
@@ -72,11 +65,10 @@ class _HomePageState extends State<HomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Thống kê'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Lịch'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Báo Cáo'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Tài khoản'),
         ],
       ),
     );
   }
 }
-
