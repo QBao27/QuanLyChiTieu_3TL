@@ -5,8 +5,10 @@ import 'views/ThongKe/ThongKe.dart';
 import 'views/Lich/Lich.dart';
 import 'views/TaiKhoan/TaiKhoan.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'views/HoSo.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
       title: 'QuanLyChiTieu_3TL',
       theme: ThemeData(
       ),
-      home: LoginScreen(),
+      home: TaiKhoanScreen(),
     );
   }
 }
@@ -45,7 +47,8 @@ class _HomePageState extends State<HomePage> {
     TrangChu(),
     ThongKe(),
     Lich(),
-    Dangnhap()
+    TaiKhoanScreen(),
+    HoSoScreen()
   ];
 
   @override
