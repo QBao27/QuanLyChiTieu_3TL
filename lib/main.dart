@@ -1,3 +1,4 @@
+import 'package:appquanlychitieu/views/DangKy.dart' show SignUpScreen;
 import 'package:appquanlychitieu/views/DangNhap.dart';
 import 'package:flutter/material.dart';
 import 'views/TrangChu/TrangChu.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
       title: 'QuanLyChiTieu_3TL',
       theme: ThemeData(
       ),
-      home: LoginScreen(),
+      home: HomePage(),
     );
   }
 }

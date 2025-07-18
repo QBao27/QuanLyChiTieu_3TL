@@ -20,6 +20,8 @@
     String selectedType = 'Chi tiêu';
   
     final List<String> types = ['Chi tiêu', 'Thu nhập'];
+
+    static const aonguoc = Icons.flight;
   
     final List<String> monthOptions = [
       'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4',
@@ -40,11 +42,11 @@
         'icon': Icons.book,
       },
       {
-        'name': 'Du lịch',
+        'name': 'Du lịch 1',
         'amount': 90000,
         'percent': 1.10,
         'color': Color(0xFF81D4FA),
-        'icon': Icons.flight,
+        'icon': aonguoc,
       },
       {
         'name': 'Thiết bị điện tử',
