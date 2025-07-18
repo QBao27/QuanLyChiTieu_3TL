@@ -3,7 +3,9 @@ import 'views/TrangChu/TrangChu.dart';
 import 'views/ThongKe/ThongKe.dart';
 import 'views/Lich/Lich.dart';
 import 'views/TaiKhoan/TaiKhoan.dart';
-
+import 'views/DangNhap.dart';
+import 'views/Quenmatkhau.dart';
+import 'views/DangKy.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
       ),
-      home: HomePage(),
+      home: SignUpScreen(),
     );
   }
 }
@@ -36,17 +38,13 @@ class _HomePageState extends State<HomePage> {
     TrangChu(),
     ThongKe(),
     Lich(),
-    TaiKhoan()
+    Dangnhap()
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Quản Lý Chi Tiêu', style: TextStyle(color: Colors.white),),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-      ),
+
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
