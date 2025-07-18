@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
     TrangChu(),
     ThongKe(),
     Lich(),
-    HoSoScreen(),
+    TaiKhoanScreen(),
   ];
 
   @override
