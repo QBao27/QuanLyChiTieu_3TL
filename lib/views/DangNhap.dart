@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Quenmatkhau.dart';
+import 'DangKy.dart';
 
 
 
@@ -365,27 +366,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 48),
 
                     // Sign Up Link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Chưa có tài khoản? ',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // Navigate to sign up
-                          },
-                          child: const Text(
-                            'Đăng ký ngay',
-                            style: TextStyle(
-                              color: Colors.amber,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Chưa có tài khoản? ',
+                style: TextStyle(color: Colors.grey),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SignUpScreen(),
                     ),
+                  );
+                },
+                child: const Text(
+                  'Đăng ký ngay',
+                  style: TextStyle(
+                    color: Colors.amber,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
                   ],
                 ),
               ),

@@ -1,5 +1,6 @@
 import 'package:appquanlychitieu/views/DangKy.dart' show SignUpScreen;
 import 'package:appquanlychitieu/views/DangNhap.dart';
+import 'package:appquanlychitieu/views/HoSo.dart';
 import 'package:flutter/material.dart';
 import 'views/TrangChu/TrangChu.dart';
 import 'views/ThongKe/ThongKe.dart';
@@ -46,7 +47,7 @@ class _HomePageState extends State<HomePage> {
     TrangChu(),
     ThongKe(),
     Lich(),
-    Dangnhap()
+    HoSoScreen(),
   ];
 
   @override
