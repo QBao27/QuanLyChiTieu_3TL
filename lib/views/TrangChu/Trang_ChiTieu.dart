@@ -19,12 +19,43 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
       backgroundColor: Colors.transparent,
       builder: (_) => const _CustomKeyboardSheet(),
     ).whenComplete(() {
-      // Khi sheet đóng xong, reset selectedIndex
       setState(() {
         selectedIndex = -1;
       });
     });
   }
+
+  /// 🎨 HEX map cho từng mục
+  final Map<String, String> iconColors = {
+    'Mua sắm': '#448AFF',
+    'Đồ ăn': '#FFB74D',
+    'Điện thoại': '#3F51B5',
+    'Giải trí': '#9C27B0',
+    'Giáo dục': '#FFC107',
+    'Sắc đẹp': '#FF4081',
+    'Thể thao': '#4CAF50',
+    'Xã hội': '#009688',
+    'Vận tải': '#795548',
+    'Quần áo': '#FF5722',
+    'Xe hơi': '#9E9E9E',
+    'Rượu bia': '#F44336',
+    'Thuốc lá': '#757575',
+    'Thiết bị': '#03A9F4',
+    'Du lịch': '#00BCD4',
+    'Sức khỏe': '#69F0AE',
+    'Thú cưng': '#7C4DFF',
+    'Sửa chữa': '#CDDC39',
+    'Nhà ở': '#607D8B',
+    'Quà tặng': '#F44336',
+    'Quyên góp': '#8BC34A',
+    'Vé số': '#FF7043',
+    'Đồ ăn nhẹ': '#FF9800',
+    'Trẻ em': '#FFEB3B',
+    'Rau củ': '#B2FF59',
+    'Hoa quả': '#E91E63',
+    'Hóa đơn': '#2196F3',
+    'Khác': '#9E9E9E',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -100,11 +131,7 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
                     'Khác',
                   ];
                   return index < iconList.length
-                      ? buildIconButton(
-                    index,
-                    iconList[index],
-                    labelList[index],
-                  )
+                      ? buildIconButton(index, iconList[index], labelList[index])
                       : const Expanded(child: SizedBox());
                 }),
               ),
@@ -115,7 +142,15 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
     );
   }
 
+  /// ✅ Hàm convert HEX -> Color
+  Color _hexToColor(String hex) {
+    return Color(int.parse(hex.replaceFirst('#', '0xFF')));
+  }
+
   Expanded buildIconButton(int index, IconData icon, String label) {
+    final hex = iconColors[label] ?? '#9E9E9E';
+    final color = _hexToColor(hex);
+
     return Expanded(
       child: Column(
         children: [
@@ -123,11 +158,11 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
             style: IconButton.styleFrom(
               backgroundColor: selectedIndex == index
                   ? Colors.yellow[700]
-                  : Colors.grey[300],
+                  : color.withOpacity(0.2),
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(15),
             ),
-            icon: Icon(icon),
+            icon: Icon(icon, color: color),
             onPressed: () => _onIconPressed(index),
           ),
           const SizedBox(height: 4),
@@ -138,9 +173,9 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
   }
 }
 
-// =============================
-// Custom Keyboard Bottom Sheet
-// =============================
+/// =============================
+/// Custom Keyboard Bottom Sheet
+/// =============================
 class _CustomKeyboardSheet extends StatefulWidget {
   const _CustomKeyboardSheet({Key? key}) : super(key: key);
 
@@ -151,13 +186,11 @@ class _CustomKeyboardSheet extends StatefulWidget {
 class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
   String amount = '0';
   final _noteCtr = TextEditingController();
-  final currencyFormat = NumberFormat.decimalPattern(
-    'vi',
-  ); // Sử dụng định dạng VN
+  final currencyFormat = NumberFormat.decimalPattern('vi');
 
   void _append(String x) {
     String clean = amount.replaceAll('.', '');
-    if (clean.length >= 10) return; // giới hạn 9 chữ số
+    if (clean.length >= 10) return;
     setState(() {
       clean = clean == '0' ? x : clean + x;
       amount = currencyFormat.format(int.parse(clean)).replaceAll(',', '.');
@@ -189,11 +222,8 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           children: [
-            // --- Hiển thị số tiền ---
-            // Thay vì 2 Align riêng, dùng Row:
             Row(
               children: [
-                // Nút Hủy canh trái
                 ElevatedButton(
                   onPressed: () {
                     FocusScope.of(context).unfocus();
@@ -209,11 +239,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                   ),
                   child: const Text('Hủy'),
                 ),
-
-                // Khoảng cách đẩy amount về bên phải
                 const Spacer(),
-
-                // Hiển thị số tiền canh phải
                 Text(
                   amount,
                   style: const TextStyle(
@@ -224,8 +250,6 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
               ],
             ),
             const SizedBox(height: 8),
-
-            // --- TextField Ghi chú ---
             TextField(
               controller: _noteCtr,
               decoration: InputDecoration(
@@ -238,10 +262,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                 ),
               ),
             ),
-
             const SizedBox(height: 12),
-
-            // --- Bàn phím số ---
             Expanded(
               child: GridView.count(
                 controller: ctrl,

@@ -13,7 +13,22 @@ class DanhSach extends StatefulWidget {
 class _DanhSachState extends State<DanhSach> {
   DateTime _selectedDate = DateTime.now();
 
-  // Dữ liệu mẫu
+  /// 🎨 Map ánh xạ title -> mã màu HEX
+  final Map<String, String> titleColors = {
+    'Đồ ăn': '#FFB74D',     // orangeAccent
+    'Khác': '#9E9E9E',      // grey
+    'Lương': '#4CAF50',     // green
+    'Áo ngược': '#EC407A',  // pinkAccent
+    'Mua sắm': '#448AFF',   // blueAccent
+    'Điện thoại': '#3F51B5', // indigo
+  };
+
+  /// Convert HEX -> Color
+  Color hexToColor(String hex) {
+    return Color(int.parse(hex.replaceFirst('#', '0xFF')));
+  }
+
+  /// Dữ liệu mẫu
   final List<Map<String, dynamic>> dummySections = [
     {
       'date': DateTime(2025, 6, 30),
@@ -21,19 +36,19 @@ class _DanhSachState extends State<DanhSach> {
         {
           'icon': Icons.restaurant,
           'title': 'Đồ ăn',
-          'amount': -9,
+          'amount': -90000,
           'note': 'Ăn trưa cùng bạn bè'
         },
         {
           'icon': Icons.category,
           'title': 'Khác',
-          'amount': 10000000008,
+          'amount': 1000000,
           'note': null
         },
         {
           'icon': Icons.restaurant,
           'title': 'Đồ ăn',
-          'amount': -3,
+          'amount': -30000,
           'note': ''
         },
       ],
@@ -44,19 +59,19 @@ class _DanhSachState extends State<DanhSach> {
         {
           'icon': Icons.payments,
           'title': 'Lương',
-          'amount': 6000000000,
+          'amount': 6000000,
           'note': 'Lương tháng 6'
         },
         {
           'icon': Icons.shopping_cart,
           'title': 'Áo ngược',
-          'amount': -12000000,
+          'amount': -1200000,
           'note': null
         },
         {
           'icon': Icons.shopping_cart,
           'title': 'Mua sắm',
-          'amount': -1000000000,
+          'amount': -1000000,
           'note': 'Mua đồ dùng'
         },
       ],
@@ -67,7 +82,7 @@ class _DanhSachState extends State<DanhSach> {
         {
           'icon': Icons.phone_iphone,
           'title': 'Điện thoại',
-          'amount': -30000,
+          'amount': -300000,
           'note': 'Mua ốp lưng'
         },
         {
@@ -79,7 +94,7 @@ class _DanhSachState extends State<DanhSach> {
         {
           'icon': Icons.shopping_cart,
           'title': 'Mua sắm',
-          'amount': -20000,
+          'amount': -200000,
           'note': 'Mua đồ dùng'
         },
       ],
@@ -107,51 +122,47 @@ class _DanhSachState extends State<DanhSach> {
 
   @override
   Widget build(BuildContext context) {
-    final formatterDate    = DateFormat('d MMM', 'vi');
+    final formatterDate = DateFormat('d MMM', 'vi');
     final formatterWeekday = DateFormat.EEEE('vi');
-    final formatterNumber  = NumberFormat.decimalPattern('vi');
+    final formatterNumber = NumberFormat.decimalPattern('vi');
 
     return Scaffold(
       body: Column(
         children: [
-          // Picker tháng năm
+          /// Chọn tháng
           GestureDetector(
             onTap: _pickMonthYear,
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(color: Colors.grey[200]),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    const Icon(Icons.calendar_month_outlined),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Tháng ${_selectedDate.month} Năm ${_selectedDate.year}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.arrow_drop_down),
-                  ],
-                ),
+            child: Container(
+              decoration: BoxDecoration(color: Colors.grey[200]),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.calendar_month_outlined),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Tháng ${_selectedDate.month} Năm ${_selectedDate.year}',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.arrow_drop_down),
+                ],
               ),
             ),
           ),
 
           const Divider(height: 1),
 
-          // Danh sách nhóm theo ngày
+          /// Danh sách
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: dummySections.length,
               itemBuilder: (context, sectionIdx) {
                 final section = dummySections[sectionIdx];
-                final date    = section['date'] as DateTime;
-                final items   = section['items'] as List<Map<String, dynamic>>;
+                final date = section['date'] as DateTime;
+                final items = section['items'] as List<Map<String, dynamic>>;
 
-                // Tính tổng
                 final sumChi = items
                     .where((e) => e['amount'] < 0)
                     .fold<int>(0, (sum, e) => sum + e['amount'] as int);
@@ -162,7 +173,6 @@ class _DanhSachState extends State<DanhSach> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Header ngày
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: Row(
@@ -180,43 +190,35 @@ class _DanhSachState extends State<DanhSach> {
                             ),
                           ),
                           const Spacer(),
-                          Flexible(
-                            flex: 0,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  '- ${formatterNumber.format(-sumChi)}',
-                                  style: const TextStyle(color: Colors.redAccent, fontSize: 14),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  '+ ${formatterNumber.format(sumThu)}',
-                                  style: const TextStyle(color: Colors.green, fontSize: 14),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
+                          Text(
+                            '- ${formatterNumber.format(-sumChi)}',
+                            style: const TextStyle(color: Colors.redAccent, fontSize: 14),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            '+ ${formatterNumber.format(sumThu)}',
+                            style: const TextStyle(color: Colors.green, fontSize: 14),
                           ),
                         ],
                       ),
                     ),
 
-                    // Các item
+                    /// Items
                     ...items.map((e) {
-                      final title  = e['title'] as String;
+                      final title = e['title'] as String;
                       final amount = e['amount'] as int;
-                      final icon   = e['icon'] as IconData;
-                      final note   = e['note'] as String?;
+                      final icon = e['icon'] as IconData;
+                      final note = e['note'] as String?;
 
                       final type = amount < 0 ? 'Chi tiêu' : 'Thu nhập';
 
+                      final bgColor = hexToColor(titleColors[title] ?? '#9E9E9E').withOpacity(0.2);
+                      final iconColor = hexToColor(titleColors[title] ?? '#9E9E9E');
+
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: Colors.grey[400],
-                          child: Icon(icon, color: Colors.white, size: 20),
+                          backgroundColor: bgColor,
+                          child: Icon(icon, color: iconColor, size: 20),
                         ),
                         title: Text(title),
                         trailing: Text(
@@ -242,7 +244,7 @@ class _DanhSachState extends State<DanhSach> {
                           );
                         },
                       );
-                    }).toList(),
+                    }),
 
                     const Divider(),
                   ],
@@ -250,45 +252,48 @@ class _DanhSachState extends State<DanhSach> {
               },
             ),
           ),
-        ],
-      ),
 
-      // Thanh tổng kết
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        color: Colors.yellow[700],
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
+          /// Tổng
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            color: Colors.yellow[700],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                const Text('Thu nhập', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(formatterNumber.format(56313131), style: const TextStyle(fontSize: 14)),
-              ],
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Chi tiêu', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(formatterNumber.format(1000120000), style: const TextStyle(fontSize: 14)),
-              ],
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Số dư', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(
-                  formatterNumber.format(56313131 - 1000120000),
-                  style: const TextStyle(fontSize: 14),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Thu nhập',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(formatterNumber.format(56313131),
+                        style: const TextStyle(fontSize: 14)),
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Chi tiêu',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(formatterNumber.format(1000120000),
+                        style: const TextStyle(fontSize: 14)),
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Số dư',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(formatterNumber.format(56313131 - 1000120000),
+                        style: const TextStyle(fontSize: 14)),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

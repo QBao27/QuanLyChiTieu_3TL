@@ -19,11 +19,25 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
       backgroundColor: Colors.transparent,
       builder: (_) => const _CustomKeyboardSheet(),
     ).whenComplete(() {
-      // Khi sheet đóng xong, reset selectedIndex
       setState(() {
         selectedIndex = -1;
       });
     });
+  }
+
+  /// 🎨 HEX mã màu cho từng loại thu nhập
+  final Map<String, String> iconColors = {
+    'Lương': '#4CAF50',         // Green
+    'Đầu tư': '#448AFF',        // BlueAccent
+    'Giải thưởng': '#FFC107',   // Amber
+    'Lì xì': '#F44336',         // RedAccent
+    'Làm thêm': '#673AB7',      // DeepPurple
+    'Khác': '#9E9E9E',          // Grey
+  };
+
+  /// Convert HEX -> Color
+  Color hexToColor(String hex) {
+    return Color(int.parse(hex.replaceFirst('#', '0xFF')));
   }
 
   @override
@@ -32,12 +46,12 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
       child: SingleChildScrollView(
         child: Column(
-          children: List.generate(7, (row) {
-            final start = row * 4;
+          children: List.generate(2, (row) {
+            final start = row * 3;
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Row(
-                children: List.generate(4, (col) {
+                children: List.generate(3, (col) {
                   final index = start + col;
                   final iconList = [
                     Icons.attach_money,
@@ -56,11 +70,7 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
                     'Khác',
                   ];
                   return index < iconList.length
-                      ? buildIconButton(
-                          index,
-                          iconList[index],
-                          labelList[index],
-                        )
+                      ? buildIconButton(index, iconList[index], labelList[index])
                       : const Expanded(child: SizedBox());
                 }),
               ),
@@ -72,6 +82,9 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
   }
 
   Expanded buildIconButton(int index, IconData icon, String label) {
+    final hex = iconColors[label] ?? '#9E9E9E';
+    final color = hexToColor(hex);
+
     return Expanded(
       child: Column(
         children: [
@@ -79,11 +92,11 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
             style: IconButton.styleFrom(
               backgroundColor: selectedIndex == index
                   ? Colors.yellow[700]
-                  : Colors.grey[300],
+                  : color.withOpacity(0.2),
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(15),
             ),
-            icon: Icon(icon),
+            icon: Icon(icon, color: color),
             onPressed: () => _onIconPressed(index),
           ),
           const SizedBox(height: 4),
@@ -94,9 +107,9 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
   }
 }
 
-// =============================
-// Custom Keyboard Bottom Sheet
-// =============================
+/// =============================
+/// Custom Keyboard Bottom Sheet
+/// =============================
 class _CustomKeyboardSheet extends StatefulWidget {
   const _CustomKeyboardSheet({Key? key}) : super(key: key);
 
@@ -107,13 +120,11 @@ class _CustomKeyboardSheet extends StatefulWidget {
 class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
   String amount = '0';
   final _noteCtr = TextEditingController();
-  final currencyFormat = NumberFormat.decimalPattern(
-    'vi',
-  ); // Sử dụng định dạng VN
+  final currencyFormat = NumberFormat.decimalPattern('vi');
 
   void _append(String x) {
     String clean = amount.replaceAll('.', '');
-    if (clean.length >= 10) return; // giới hạn 9 chữ số
+    if (clean.length >= 10) return;
     setState(() {
       clean = clean == '0' ? x : clean + x;
       amount = currencyFormat.format(int.parse(clean)).replaceAll(',', '.');
@@ -145,11 +156,8 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           children: [
-            // --- Hiển thị số tiền ---
-            // Thay vì 2 Align riêng, dùng Row:
             Row(
               children: [
-                // Nút Hủy canh trái
                 ElevatedButton(
                   onPressed: () {
                     FocusScope.of(context).unfocus();
@@ -165,11 +173,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                   ),
                   child: const Text('Hủy'),
                 ),
-
-                // Khoảng cách đẩy amount về bên phải
                 const Spacer(),
-
-                // Hiển thị số tiền canh phải
                 Text(
                   amount,
                   style: const TextStyle(
@@ -180,8 +184,6 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
               ],
             ),
             const SizedBox(height: 8),
-
-            // --- TextField Ghi chú ---
             TextField(
               controller: _noteCtr,
               decoration: InputDecoration(
@@ -194,10 +196,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                 ),
               ),
             ),
-
             const SizedBox(height: 12),
-
-            // --- Bàn phím số ---
             Expanded(
               child: GridView.count(
                 controller: ctrl,
