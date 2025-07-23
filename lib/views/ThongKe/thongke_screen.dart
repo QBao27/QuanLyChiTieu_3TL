@@ -355,6 +355,7 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
 
   final List<String> types = ['Chi tiêu', 'Thu nhập'];
 
+
   final List<String> monthOptions = [
     'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4',
     'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8',
@@ -410,8 +411,8 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
 
 
           final filtered = allData.where((e) {
-            if (selectedType == 'Chi tiêu' && e.loaiGiaoDich != 'chi') return false;
-            if (selectedType == 'Thu nhập' && e.loaiGiaoDich != 'thu') return false;
+            if (selectedType == 'Chi tiêu' && e.loaiGiaoDich != 'Chi') return false;
+            if (selectedType == 'Thu nhập' && e.loaiGiaoDich != 'Thu') return false;
 
             final date = DateTime.parse(e.ngayGiaoDich);
             if (isMonthSelected) {
@@ -648,4 +649,5 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
     );
   }
 }
+
 
