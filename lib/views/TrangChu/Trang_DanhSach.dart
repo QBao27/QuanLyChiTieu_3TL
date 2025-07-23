@@ -1,10 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:appquanlychitieu/models/TrangChu/GiaoDich.dart';
+import 'package:appquanlychitieu/controllers/TrangChu/API_GiaoDich.dart';
 import 'Trang_ChiTiet.dart';
+import 'package:appquanlychitieu/utils/icon_helper.dart';
+import 'package:appquanlychitieu/utils/category_colors.dart';
 
 class DanhSach extends StatefulWidget {
-  const DanhSach({super.key});
+  const DanhSach({Key? key}) : super(key: key);
 
   @override
   State<DanhSach> createState() => _DanhSachState();
@@ -12,79 +17,50 @@ class DanhSach extends StatefulWidget {
 
 class _DanhSachState extends State<DanhSach> {
   DateTime _selectedDate = DateTime.now();
+  final ApiService _api = ApiService();
 
-  // Dữ liệu mẫu
-  final List<Map<String, dynamic>> dummySections = [
-    {
-      'date': DateTime(2025, 6, 30),
-      'items': [
-        {
-          'icon': Icons.restaurant,
-          'title': 'Đồ ăn',
-          'amount': -9,
-          'note': 'Ăn trưa cùng bạn bè'
+  Summary? _summary;
+  List<DailyTransactions> _sections = [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final report = await _api
+          .getMonthlyReport(
+        idTaiKhoan: 1,
+        month: _selectedDate.month,
+        year: _selectedDate.year,
+      )
+          .timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw Exception('Kết nối quá lâu, vui lòng thử lại sau.');
         },
-        {
-          'icon': Icons.category,
-          'title': 'Khác',
-          'amount': 10000000008,
-          'note': null
-        },
-        {
-          'icon': Icons.restaurant,
-          'title': 'Đồ ăn',
-          'amount': -3,
-          'note': ''
-        },
-      ],
-    },
-    {
-      'date': DateTime(2025, 7, 6),
-      'items': [
-        {
-          'icon': Icons.payments,
-          'title': 'Lương',
-          'amount': 6000000000,
-          'note': 'Lương tháng 6'
-        },
-        {
-          'icon': Icons.shopping_cart,
-          'title': 'Áo ngược',
-          'amount': -12000000,
-          'note': null
-        },
-        {
-          'icon': Icons.shopping_cart,
-          'title': 'Mua sắm',
-          'amount': -1000000000,
-          'note': 'Mua đồ dùng'
-        },
-      ],
-    },
-    {
-      'date': DateTime(2025, 7, 6),
-      'items': [
-        {
-          'icon': Icons.phone_iphone,
-          'title': 'Điện thoại',
-          'amount': -30000,
-          'note': 'Mua ốp lưng'
-        },
-        {
-          'icon': Icons.payments,
-          'title': 'Lương',
-          'amount': 5000000,
-          'note': 'Lương tháng 6'
-        },
-        {
-          'icon': Icons.shopping_cart,
-          'title': 'Mua sắm',
-          'amount': -20000,
-          'note': 'Mua đồ dùng'
-        },
-      ],
-    },
-  ];
+      );
+
+      setState(() {
+        _summary = report.summary;
+        _sections = report.transactions;
+        _loading = false;
+      });
+    } on Exception catch (e) {
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    }
+  }
 
   Future<void> _pickMonthYear() async {
     final picked = await showMonthPicker(
@@ -102,194 +78,185 @@ class _DanhSachState extends State<DanhSach> {
 
     if (picked != null) {
       setState(() => _selectedDate = picked);
+      await _loadData();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final formatterDate    = DateFormat('d MMM', 'vi');
-    final formatterWeekday = DateFormat.EEEE('vi');
-    final formatterNumber  = NumberFormat.decimalPattern('vi');
+    final fmtDate = DateFormat('d MMM', 'vi');
+    final fmtWeekday = DateFormat.EEEE('vi');
+    final fmtNumber = NumberFormat.decimalPattern('vi');
 
     return Scaffold(
       body: Column(
         children: [
-          // Picker tháng năm
+          // Month picker
           GestureDetector(
             onTap: _pickMonthYear,
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(color: Colors.grey[200]),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    const Icon(Icons.calendar_month_outlined),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Tháng ${_selectedDate.month} Năm ${_selectedDate.year}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.arrow_drop_down),
-                  ],
-                ),
+            child: Container(
+              color: Colors.grey[200],
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.calendar_month_outlined),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Tháng ${_selectedDate.month} Năm ${_selectedDate.year}',
+                    style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.arrow_drop_down),
+                ],
               ),
             ),
           ),
-
           const Divider(height: 1),
 
-          // Danh sách nhóm theo ngày
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: dummySections.length,
-              itemBuilder: (context, sectionIdx) {
-                final section = dummySections[sectionIdx];
-                final date    = section['date'] as DateTime;
-                final items   = section['items'] as List<Map<String, dynamic>>;
+          // Body
+          if (_loading)
+            const Expanded(
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_error != null)
+            Expanded(
+              child: Center(child: Text('Lỗi: $_error')),
+            )
+          else if (_sections.isEmpty)
+              Expanded(
+                child: Center(child: Text('Không có giao dịch.')),
+              )
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _sections.length,
+                  itemBuilder: (ctx, idx) {
+                    final section = _sections[idx];
+                    final date = DateTime.parse(section.date);
+                    final items = section.items;
 
-                // Tính tổng
-                final sumChi = items
-                    .where((e) => e['amount'] < 0)
-                    .fold<int>(0, (sum, e) => sum + e['amount'] as int);
-                final sumThu = items
-                    .where((e) => e['amount'] > 0)
-                    .fold<int>(0, (sum, e) => sum + e['amount'] as int);
+                    final sumChi = items
+                        .where((e) => e.loai.toLowerCase() == 'chi')
+                        .fold<double>(0, (s, e) => s + e.soTien);
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Header ngày
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: Row(
-                        children: [
-                          Text(
-                            formatterDate.format(date),
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                          ),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: Text(
-                              formatterWeekday.format(date),
-                              style: const TextStyle(color: Colors.grey, fontSize: 14),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const Spacer(),
-                          Flexible(
-                            flex: 0,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  '- ${formatterNumber.format(-sumChi)}',
-                                  style: const TextStyle(color: Colors.redAccent, fontSize: 14),
-                                  overflow: TextOverflow.ellipsis,
+                    final sumThu = items
+                        .where((e) => e.loai.toLowerCase() == 'thu')
+                        .fold<double>(0, (s, e) => s + e.soTien);
+
+                    return Column(
+                      children: [
+                        // Header
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              Text(fmtDate.format(date),
+                                  style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(fmtWeekday.format(date),
+                                    style:
+                                    const TextStyle(color: Colors.grey)),
+                              ),
+                              const Spacer(),
+                              Text(
+                                'Chi: ${fmtNumber.format(sumChi.abs())}',
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12, // giảm kích thước chữ
                                 ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  '+ ${formatterNumber.format(sumThu)}',
-                                  style: const TextStyle(color: Colors.green, fontSize: 14),
-                                  overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Thu: ${fmtNumber.format(sumThu)}',
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12, // giảm kích thước chữ
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                              ),
 
-                    // Các item
-                    ...items.map((e) {
-                      final title  = e['title'] as String;
-                      final amount = e['amount'] as int;
-                      final icon   = e['icon'] as IconData;
-                      final note   = e['note'] as String?;
-
-                      final type = amount < 0 ? 'Chi tiêu' : 'Thu nhập';
-
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.grey[400],
-                          child: Icon(icon, color: Colors.white, size: 20),
-                        ),
-                        title: Text(title),
-                        trailing: Text(
-                          '${amount < 0 ? '-' : '+'}${formatterNumber.format(amount.abs())}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: amount < 0 ? Colors.red : Colors.green,
+                            ],
                           ),
                         ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => DetailPage(
-                                title: title,
-                                type: type,
-                                amount: amount,
-                                date: date,
-                                icon: icon,
-                                note: note,
+                        // Items
+                        ...items.map((e) {
+                          final colorHex = e.color?.isNotEmpty == true ? e.color! : '#9E9E9E';
+                          final bgColor = hexToColor(colorHex).withOpacity(0.2);
+                          final iconColor = hexToColor(colorHex);
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: bgColor,
+                              child: Icon(
+                                getIconData(e.icon),
+                                color: iconColor,
+                                size: 20,
+                              ),
+                            ),
+                            title: Text(e.moTa ?? e.tenDanhMuc),
+                            trailing: Text(
+                              '${e.loai.toLowerCase() == "chi" ? '-' : '+'}${fmtNumber.format(e.soTien.abs())}',
+                              style: TextStyle(
+                                color: e.loai.toLowerCase() == "chi" ? Colors.red : Colors.green,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DetailPage(
+                                  title: e.tenDanhMuc,
+                                  type: e.loai,
+                                  amount: e.soTien.toInt(),
+                                  date: date,
+                                  icon: getIconData(e.icon),
+                                  note: e.moTa,
+                                  color: hexToColor(e.color ?? '#9E9E9E')
+                                ),
                               ),
                             ),
                           );
-                        },
-                      );
-                    }).toList(),
-
-                    const Divider(),
-                  ],
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-
-      // Thanh tổng kết
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        color: Colors.yellow[700],
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Thu nhập', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(formatterNumber.format(56313131), style: const TextStyle(fontSize: 14)),
-              ],
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Chi tiêu', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(formatterNumber.format(1000120000), style: const TextStyle(fontSize: 14)),
-              ],
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Số dư', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(
-                  formatterNumber.format(56313131 - 1000120000),
-                  style: const TextStyle(fontSize: 14),
+                        }).toList(),
+                        const Divider(),
+                      ],
+                    );
+                  },
                 ),
-              ],
+              ),
+
+          // Footer summary
+          if (_summary != null)
+            Container(
+              color: Colors.yellow[700],
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildSummaryCol(
+                      'Thu nhập', _summary!.totalIncome, fmtNumber),
+                  _buildSummaryCol(
+                      'Chi tiêu', _summary!.totalExpense, fmtNumber),
+                  _buildSummaryCol('Số dư', _summary!.balance, fmtNumber),
+                ],
+              ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
+
+  Widget _buildSummaryCol(
+      String label, double value, NumberFormat fmt) =>
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text(fmt.format(value), style: const TextStyle(fontSize: 14)),
+        ],
+      );
 }

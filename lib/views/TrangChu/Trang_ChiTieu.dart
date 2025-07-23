@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:appquanlychitieu/utils/icon_helper.dart';
+import 'package:appquanlychitieu/utils/category_colors.dart';
 
 class ThemChiTieu extends StatefulWidget {
   const ThemChiTieu({super.key});
@@ -19,13 +21,11 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
       backgroundColor: Colors.transparent,
       builder: (_) => const _CustomKeyboardSheet(),
     ).whenComplete(() {
-      // Khi sheet đóng xong, reset selectedIndex
       setState(() {
         selectedIndex = -1;
       });
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -100,11 +100,7 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
                     'Khác',
                   ];
                   return index < iconList.length
-                      ? buildIconButton(
-                    index,
-                    iconList[index],
-                    labelList[index],
-                  )
+                      ? buildIconButton(index, iconList[index], labelList[index])
                       : const Expanded(child: SizedBox());
                 }),
               ),
@@ -116,6 +112,9 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
   }
 
   Expanded buildIconButton(int index, IconData icon, String label) {
+    final hex = titleColors[label] ?? '#9E9E9E';
+    final color = hexToColor(hex);
+
     return Expanded(
       child: Column(
         children: [
@@ -123,11 +122,11 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
             style: IconButton.styleFrom(
               backgroundColor: selectedIndex == index
                   ? Colors.yellow[700]
-                  : Colors.grey[300],
+                  : color.withOpacity(0.2),
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(15),
             ),
-            icon: Icon(icon),
+            icon: Icon(icon, color: color),
             onPressed: () => _onIconPressed(index),
           ),
           const SizedBox(height: 4),
@@ -138,9 +137,9 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
   }
 }
 
-// =============================
-// Custom Keyboard Bottom Sheet
-// =============================
+/// =============================
+/// Custom Keyboard Bottom Sheet
+/// =============================
 class _CustomKeyboardSheet extends StatefulWidget {
   const _CustomKeyboardSheet({Key? key}) : super(key: key);
 
@@ -151,13 +150,11 @@ class _CustomKeyboardSheet extends StatefulWidget {
 class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
   String amount = '0';
   final _noteCtr = TextEditingController();
-  final currencyFormat = NumberFormat.decimalPattern(
-    'vi',
-  ); // Sử dụng định dạng VN
+  final currencyFormat = NumberFormat.decimalPattern('vi');
 
   void _append(String x) {
     String clean = amount.replaceAll('.', '');
-    if (clean.length >= 10) return; // giới hạn 9 chữ số
+    if (clean.length >= 10) return;
     setState(() {
       clean = clean == '0' ? x : clean + x;
       amount = currencyFormat.format(int.parse(clean)).replaceAll(',', '.');
@@ -189,11 +186,8 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           children: [
-            // --- Hiển thị số tiền ---
-            // Thay vì 2 Align riêng, dùng Row:
             Row(
               children: [
-                // Nút Hủy canh trái
                 ElevatedButton(
                   onPressed: () {
                     FocusScope.of(context).unfocus();
@@ -209,11 +203,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                   ),
                   child: const Text('Hủy'),
                 ),
-
-                // Khoảng cách đẩy amount về bên phải
                 const Spacer(),
-
-                // Hiển thị số tiền canh phải
                 Text(
                   amount,
                   style: const TextStyle(
@@ -224,8 +214,6 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
               ],
             ),
             const SizedBox(height: 8),
-
-            // --- TextField Ghi chú ---
             TextField(
               controller: _noteCtr,
               decoration: InputDecoration(
@@ -238,10 +226,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                 ),
               ),
             ),
-
             const SizedBox(height: 12),
-
-            // --- Bàn phím số ---
             Expanded(
               child: GridView.count(
                 controller: ctrl,
