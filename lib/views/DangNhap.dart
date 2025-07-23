@@ -458,7 +458,9 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../controllers/TaiKhoan/API_DangNhap.dart';
+import '../main.dart';
 import 'Quenmatkhau.dart';
 import 'DangKy.dart';
 import 'package:http/http.dart' as http;
@@ -506,7 +508,6 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = true;
       });
 
-      // 👉 Log dữ liệu nhập vào
       print('Email: ${_emailController.text.trim()}');
       print('Mật khẩu: ${_passwordController.text.trim()}');
 
@@ -521,7 +522,12 @@ class _LoginScreenState extends State<LoginScreen> {
         });
 
         if (user != null) {
-          print('Đăng nhập thành công: ${user.email}'); // 👉 Log thông tin người dùng
+          print('Đăng nhập thành công: ${user.email}');
+
+          // 🔐 Lưu userId vào SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('userId', user.id!);
+          print('Đã lưu userId: ${user.id}');
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -530,7 +536,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
 
-          // Navigator.pushReplacement(...);
+          // Chuyển trang nếu cần
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
         } else {
           print('Đăng nhập thất bại: Sai tài khoản hoặc mật khẩu');
 
