@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:appquanlychitieu/utils/icon_helper.dart';
 import 'package:appquanlychitieu/utils/category_colors.dart';
 import 'package:appquanlychitieu/controllers/TrangChu/API_GiaoDich.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/TrangChu/GiaoDich.dart';
 
@@ -29,27 +30,34 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
   ];
   final idDanhMucList = [33, 34, 35, 36, 37, 32]; // 'Khác' có id là 32
 
-  void _onIconPressed(int idx) {
+  Future<void> _onIconPressed(int idx) async {
+    setState(() => selectedIndex = idx);
+
+    // Lấy userId từ SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId') ?? 1;
+
     final hex = titleColors[labelList[idx]] ?? '#9E9E9E';
-    showModalBottomSheet<bool>(
+
+    final added = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _CustomKeyboardSheet(
-        idTaiKhoan: 1,
+        idTaiKhoan: userId,
         idDanhMuc: idDanhMucList[idx],
         colorHex: hex,
         loaiThuChi: 'thu',
       ),
-    ).then((added) {
-      if (added == true) {
-        Navigator.of(context).pop(true);
-      }
-      setState(() => selectedIndex = -1);
-    });
+    );
 
-    setState(() => selectedIndex = idx);
+    if (added == true) {
+      Navigator.of(context).pop(true);
+    }
+
+    setState(() => selectedIndex = -1);
   }
+
 
   @override
   Widget build(BuildContext context) {

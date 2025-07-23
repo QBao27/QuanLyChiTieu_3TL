@@ -4,6 +4,7 @@ import 'package:appquanlychitieu/utils/icon_helper.dart';
 import 'package:appquanlychitieu/utils/category_colors.dart';
 import 'package:appquanlychitieu/models/TrangChu/GiaoDich.dart';
 import 'package:appquanlychitieu/controllers/TrangChu/API_GiaoDich.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class ThemChiTieu extends StatefulWidget {
@@ -43,28 +44,36 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
   // Giờ chạy từ 5 → 32
   final idDanhMucList = List.generate(28, (i) => i + 5);
 
-  void _onIconPressed(int idx) {
+  Future<void> _onIconPressed(int idx) async {
+    setState(() => selectedIndex = idx);
+
+    // Lấy userId từ SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId') ?? 1;
+
     final hex = titleColors[labelList[idx]] ?? '#9E9E9E';
-    showModalBottomSheet<bool>(
+
+    // Hiển thị bottom sheet
+    final added = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _CustomKeyboardSheet(
-        idTaiKhoan: 1,                    // TODO: lấy từ SharedPreferences
-        idDanhMuc: idDanhMucList[idx],   // lấy id tương ứng
+        idTaiKhoan: userId,
+        idDanhMuc: idDanhMucList[idx],
         colorHex: hex,
       ),
-    ).then((added) {
-      if (added == true) {
-        // Nếu cần reload danh sách, gọi setState hoặc fetch lại dữ liệu
+    );
 
+    // Nếu có thay đổi → gọi reload dữ liệu
+    if (added == true) {
+      // TODO: Gọi lại loadData hoặc cập nhật UI nếu cần
+      // await _loadData();
+    }
 
-      }
-      setState(() => selectedIndex = -1);
-    });
-
-    setState(() => selectedIndex = idx);
+    setState(() => selectedIndex = -1);
   }
+
 
   @override
   Widget build(BuildContext context) {

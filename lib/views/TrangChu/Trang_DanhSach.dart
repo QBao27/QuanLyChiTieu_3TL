@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:appquanlychitieu/models/TrangChu/GiaoDich.dart';
 import 'package:appquanlychitieu/controllers/TrangChu/API_GiaoDich.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Trang_ChiTiet.dart';
 import 'package:appquanlychitieu/utils/icon_helper.dart';
 import 'package:appquanlychitieu/utils/category_colors.dart';
@@ -31,6 +32,8 @@ class _DanhSachState extends State<DanhSach> {
   }
 
   Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final int userId = prefs.getInt('userId') ?? 1;
     setState(() {
       _loading = true;
       _error = null;
@@ -38,7 +41,7 @@ class _DanhSachState extends State<DanhSach> {
     try {
       final report = await _api
           .getMonthlyReport(
-        idTaiKhoan: 1,
+        idTaiKhoan: userId,
         month: _selectedDate.month,
         year: _selectedDate.year,
       )
