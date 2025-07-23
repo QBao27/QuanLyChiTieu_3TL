@@ -355,6 +355,7 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
 
   final List<String> types = ['Chi tiêu', 'Thu nhập'];
 
+
   final List<String> monthOptions = [
     'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4',
     'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8',
@@ -395,11 +396,60 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
 
           final List<GiaoDich> allData = snapshot.data ?? [];
 
+
+
+          // Lấy ra các tháng/năm có dữ liệu
+          final monthsWithData = allData.map((gd) {
+            final date = DateTime.parse(gd.ngayGiaoDich);
+            return date.month;
+          }).toSet();
+
+          final yearsWithData = allData.map((gd) {
+            final date = DateTime.parse(gd.ngayGiaoDich);
+            return date.year;
+          }).toSet();
+
+
           final filtered = allData.where((e) {
-            if (selectedType == 'Chi tiêu') return e.loaiGiaoDich == 'chi';
-            if (selectedType == 'Thu nhập') return e.loaiGiaoDich == 'thu';
-            return false;
+            if (selectedType == 'Chi tiêu' && e.loaiGiaoDich != 'Chi') return false;
+            if (selectedType == 'Thu nhập' && e.loaiGiaoDich != 'Thu') return false;
+
+            final date = DateTime.parse(e.ngayGiaoDich);
+            if (isMonthSelected) {
+              final selectedMonthInt = int.tryParse(selectedMonth.replaceAll('Tháng ', '')) ?? 0;
+              return date.month == selectedMonthInt;
+            } else {
+              final selectedYearInt = int.tryParse(selectedYear.replaceAll('Năm ', '')) ?? 0;
+              return date.year == selectedYearInt;
+            }
           }).toList();
+
+          if (filtered.isEmpty) {
+            return Column(
+              children: [
+                const SizedBox(height: 20),
+                buildTabSwitch(),
+                const SizedBox(height: 20),
+                if (isMonthSelected)
+                  TabList(
+                    options: monthOptions, // ✅ luôn đầy đủ!
+                    selectedValue: selectedMonth,
+                    onTap: (value) => setState(() => selectedMonth = value),
+                  )
+                else
+                  TabList(
+                    options: yearOptions, // ✅ luôn đầy đủ!
+                    selectedValue: selectedYear,
+                    onTap: (value) => setState(() => selectedYear = value),
+                  ),
+                const SizedBox(height: 50),
+                const Text(
+                  'Chưa có dữ liệu',
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+              ],
+            );
+          }
 
           final totalAmount = filtered.fold<double>(0, (sum, item) => sum + item.soTien);
 
@@ -419,6 +469,7 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
                 selectedValue: selectedYear,
                 onTap: (value) => setState(() => selectedYear = value),
               ),
+
               const SizedBox(height: 20),
               SizedBox(
                 height: 280,
@@ -598,4 +649,5 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
     );
   }
 }
+
 
