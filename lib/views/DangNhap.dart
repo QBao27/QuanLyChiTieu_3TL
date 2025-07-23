@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'Quenmatkhau.dart';
 import 'DangKy.dart';
-
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +18,20 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
   bool _isLoading = false;
+
+  Future<void> login() async {
+    final url = Uri.parse(
+        "http://10.0.2.2:5000/api/auth/login"); // dùng 10.0.2.2 khi chạy giả lập Android
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "email": _emailController.text,
+        "password": _passwordController.text,
+      }),
+    );
+    // Xử lý response ở đây
+  }
 
   @override
   void dispose() {
@@ -129,7 +143,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: InputDecoration(
                           hintText: 'Email hoặc số điện thoại',
                           hintStyle: const TextStyle(color: Colors.grey),
-                          prefixIcon: const Icon(Icons.email_outlined, color: Colors.amber),
+                          prefixIcon: const Icon(
+                              Icons.email_outlined, color: Colors.amber),
                           contentPadding: const EdgeInsets.all(20),
                           filled: true,
                           fillColor: Colors.grey[900],
@@ -146,11 +161,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontWeight: FontWeight.w500,
                           ),
                           errorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.redAccent,width:2),
+                            borderSide: const BorderSide(
+                                color: Colors.redAccent, width: 2),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.redAccent),
+                            borderSide: const BorderSide(
+                                color: Colors.redAccent),
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
@@ -161,7 +178,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           return null;
                         },
                       ),
-
                     ),
 
                     const SizedBox(height: 16),
@@ -172,7 +188,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
                       ),
-
                       child: TextFormField(
                         controller: _passwordController,
                         obscureText: !_isPasswordVisible,
@@ -180,10 +195,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: InputDecoration(
                           hintText: 'Mật khẩu',
                           hintStyle: const TextStyle(color: Colors.grey),
-                          prefixIcon: const Icon(Icons.lock_outline, color: Colors.amber),
+                          prefixIcon: const Icon(
+                              Icons.lock_outline, color: Colors.amber),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              _isPasswordVisible ? Icons.visibility : Icons
+                                  .visibility_off,
                               color: Colors.amber,
                             ),
                             onPressed: () {
@@ -208,11 +225,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontWeight: FontWeight.w500,
                           ),
                           errorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+                            borderSide: const BorderSide(
+                                color: Colors.redAccent, width: 2),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.redAccent),
+                            borderSide: const BorderSide(
+                                color: Colors.redAccent),
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
@@ -226,7 +245,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           return null;
                         },
                       ),
-
                     ),
 
                     const SizedBox(height: 16),
@@ -258,7 +276,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const ForgotPasswordScreen(),
+                                builder: (
+                                    context) => const ForgotPasswordScreen(),
                               ),
                             );
                           },
@@ -357,7 +376,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: _socialButton(
                             'Facebook',
                             Icons.facebook,
-                            Colors.blue!,
+                            Colors.blue,
                           ),
                         ),
                       ],
@@ -366,32 +385,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 48),
 
                     // Sign Up Link
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Chưa có tài khoản? ',
-                style: TextStyle(color: Colors.grey),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SignUpScreen(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Chưa có tài khoản? ',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SignUpScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'Đăng ký ngay',
+                            style: TextStyle(
+                              color: Colors.amber,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-                child: const Text(
-                  'Đăng ký ngay',
-                  style: TextStyle(
-                    color: Colors.amber,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
                   ],
                 ),
               ),
