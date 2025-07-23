@@ -78,7 +78,7 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final displayAmount = '${_currentAmount < 0 ? '-' : '+'}${_formatterNumber.format(_currentAmount.abs())}';
+    final displayAmount = '${widget.type.toLowerCase() == 'chi' ? '-' : '+'}${_formatterNumber.format(_currentAmount)}';
 
     return Scaffold(
       appBar: AppBar(
@@ -121,7 +121,7 @@ class _DetailPageState extends State<DetailPage> {
                       displayAmount,
                       style: TextStyle(
                         fontSize: 16,
-                        color: _currentAmount < 0 ? Colors.red : Colors.green,
+                        color: widget.type.toLowerCase() == 'chi' ? Colors.red : Colors.green,
                         fontWeight: FontWeight.bold,
                       ),
                     )),
