@@ -203,20 +203,44 @@ class _DanhSachState extends State<DanhSach> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => DetailPage(
-                                  title: e.tenDanhMuc,
-                                  type: e.loai,
-                                  amount: e.soTien.toInt(),
-                                  date: date,
-                                  icon: getIconData(e.icon),
-                                  note: e.moTa,
-                                  color: hexToColor(e.color ?? '#9E9E9E')
+                            onTap: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DetailPage(
+                                    title: e.tenDanhMuc,
+                                    type: e.loai,
+                                    amount: e.soTien.toInt(),
+                                    date: date,
+                                    icon: getIconData(e.icon),
+                                    note: e.moTa,
+                                    color: hexToColor(e.color ?? '#9E9E9E'),
+                                    id: e.id,
+                                  ),
                                 ),
-                              ),
-                            ),
+                              );
+
+                              if (result == true) {
+                                // ✅ Gọi lại hàm load dữ liệu
+                                await _loadData(); // hoặc setState + gọi API
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Row(
+                                      children: const [
+                                        Icon(Icons.check_circle, color: Colors.white),
+                                        SizedBox(width: 8),
+                                        Expanded(child: Text('Đã xóa giao dịch thành công.')),
+                                      ],
+                                    ),
+                                    backgroundColor: Colors.green,
+                                    duration: const Duration(seconds: 2),
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    margin: const EdgeInsets.all(16),
+                                  ),
+                                );
+                              }
+                            },
                           );
                         }).toList(),
                         const Divider(),
