@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:appquanlychitieu/utils/icon_helper.dart';
+import 'package:appquanlychitieu/utils/category_colors.dart';
 
 class ThemThuNhap extends StatefulWidget {
   const ThemThuNhap({super.key});
@@ -23,21 +25,6 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
         selectedIndex = -1;
       });
     });
-  }
-
-  /// 🎨 HEX mã màu cho từng loại thu nhập
-  final Map<String, String> iconColors = {
-    'Lương': '#4CAF50',         // Green
-    'Đầu tư': '#448AFF',        // BlueAccent
-    'Giải thưởng': '#FFC107',   // Amber
-    'Lì xì': '#F44336',         // RedAccent
-    'Làm thêm': '#673AB7',      // DeepPurple
-    'Khác': '#9E9E9E',          // Grey
-  };
-
-  /// Convert HEX -> Color
-  Color hexToColor(String hex) {
-    return Color(int.parse(hex.replaceFirst('#', '0xFF')));
   }
 
   @override
@@ -82,7 +69,7 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
   }
 
   Expanded buildIconButton(int index, IconData icon, String label) {
-    final hex = iconColors[label] ?? '#9E9E9E';
+    final hex = titleColors[label] ?? '#9E9E9E';
     final color = hexToColor(hex);
 
     return Expanded(

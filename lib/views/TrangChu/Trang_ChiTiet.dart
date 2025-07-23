@@ -8,6 +8,7 @@ class DetailPage extends StatefulWidget {
   final DateTime date;
   final IconData icon;
   final String note;
+  final Color color;
 
   DetailPage({
     Key? key,
@@ -17,6 +18,7 @@ class DetailPage extends StatefulWidget {
     required this.date,
     required this.icon,
     String? note,
+    required this.color,
   })  : note = (note == null || note.trim().isEmpty) ? 'Không' : note,
         super(key: key);
 
@@ -78,7 +80,7 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final displayAmount = '${_currentAmount < 0 ? '-' : '+'}${_formatterNumber.format(_currentAmount.abs())}';
+    final displayAmount = '${widget.type.toLowerCase() == 'chi' ? '-' : '+'}${_formatterNumber.format(_currentAmount)}';
 
     return Scaffold(
       appBar: AppBar(
@@ -100,8 +102,8 @@ class _DetailPageState extends State<DetailPage> {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: Colors.grey[200],
-                    child: Icon(widget.icon, size: 28),
+                    backgroundColor: widget.color.withOpacity(0.2),
+                    child: Icon(widget.icon, size: 28, color: widget.color),
                   ),
                   const SizedBox(height: 12),
                   Text(widget.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -121,7 +123,7 @@ class _DetailPageState extends State<DetailPage> {
                       displayAmount,
                       style: TextStyle(
                         fontSize: 16,
-                        color: _currentAmount < 0 ? Colors.red : Colors.green,
+                        color: widget.type.toLowerCase() == 'chi' ? Colors.red : Colors.green,
                         fontWeight: FontWeight.bold,
                       ),
                     )),
