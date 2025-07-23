@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       title: 'QuanLyChiTieu_3TL',
       theme: ThemeData(
       ),
-      home: HomePage(),
+      home: LoginScreen(),
     );
   }
 }

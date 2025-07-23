@@ -32,19 +32,28 @@ class ApiService {
     }
   }
 
-  /// Thêm giao dịch (vẫn dùng nếu bạn có endpoint POST /api/giaodich)
-  // Future<void> addGiaoDich(GiaoDich gd) async {
-  //   final response = await http.post(
-  //     Uri.parse(baseUrl),
-  //     headers: {"Content-Type": "application/json"},
-  //     body: json.encode(gd.toJson()),
-  //   );
-  //   if (response.statusCode != 200 && response.statusCode != 201) {
-  //     throw Exception("Thêm giao dịch thất bại: ${response.statusCode}");
-  //   }
-  // }
+  // Xóa giao dịch (DELETE /api/giaodich/{id})
+  Future<void> deleteGiaoDich(int id) async {
+    final response = await http.delete(Uri.parse('$baseUrl/$id'));
+    if (response.statusCode != 200) {
+      throw Exception("Xóa thất bại: ${response.statusCode}");
+    }
+  }
 
-  /// Cập nhật giao dịch (PUT /api/giaodich/{id})
+  // Thêm giao dịch (vẫn dùng nếu bạn có endpoint POST /api/giaodich)
+  Future<void> addGiaoDich(int idTaiKhoan, ThemGiaoDichDto gd) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/by-tai-khoan/$idTaiKhoan"),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(gd.toJson()),
+    );
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception("Thêm giao dịch thất bại: ${response.statusCode}");
+    }
+  }
+
+
+/// Cập nhật giao dịch (PUT /api/giaodich/{id})
   // Future<void> updateGiaoDich(GiaoDich gd) async {
   //   if (gd.id == null) throw Exception("ID giao dịch không được null.");
   //   final response = await http.put(
@@ -57,11 +66,5 @@ class ApiService {
   //   }
   // }
 
-  /// Xóa giao dịch (DELETE /api/giaodich/{id})
-  // Future<void> deleteGiaoDich(int id) async {
-  //   final response = await http.delete(Uri.parse('$baseUrl/$id'));
-  //   if (response.statusCode != 200) {
-  //     throw Exception("Xóa thất bại: ${response.statusCode}");
-  //   }
-  // }
+
 }

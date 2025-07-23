@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:appquanlychitieu/controllers/TrangChu/API_GiaoDich.dart';
 
 class DetailPage extends StatefulWidget {
   final String title;
@@ -9,6 +10,7 @@ class DetailPage extends StatefulWidget {
   final IconData icon;
   final String note;
   final Color color;
+  final int id;
 
   DetailPage({
     Key? key,
@@ -18,6 +20,7 @@ class DetailPage extends StatefulWidget {
     required this.date,
     required this.icon,
     String? note,
+    required this.id,
     required this.color,
   })  : note = (note == null || note.trim().isEmpty) ? 'Không' : note,
         super(key: key);
@@ -27,6 +30,7 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  final api = ApiService();
   late int _currentAmount;
   late TextEditingController _noteController;
   final _formatterDate = DateFormat('d MMM, y', 'vi_VN');
@@ -162,7 +166,29 @@ class _DetailPageState extends State<DetailPage> {
                       ],
                     ),
                   );
-                  if (confirm == true) Navigator.of(context).pop();
+                  if (confirm == true) {
+                    try {
+                      await api.deleteGiaoDich(widget.id); // ✅ Gọi hàm xóa từ API
+                      Navigator.of(context).pop(true); // ✅ Trả về true để trang trước reload
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: const [
+                              Icon(Icons.error, color: Colors.white),
+                              SizedBox(width: 8),
+                              Expanded(child: Text('Xóa thất bại. Vui lòng thử lại!')),
+                            ],
+                          ),
+                          backgroundColor: Colors.red,
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          margin: const EdgeInsets.all(16),
+                        ),
+                      );
+                    }
+                  }
                 },
                 child: const Text('Xóa', style: TextStyle(fontSize: 16)),
               ),
