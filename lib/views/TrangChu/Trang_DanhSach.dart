@@ -6,6 +6,7 @@ import 'package:appquanlychitieu/models/TrangChu/GiaoDich.dart';
 import 'package:appquanlychitieu/controllers/TrangChu/API_GiaoDich.dart';
 import 'Trang_ChiTiet.dart';
 import 'package:appquanlychitieu/utils/icon_helper.dart';
+import 'package:appquanlychitieu/utils/category_colors.dart';
 
 class DanhSach extends StatefulWidget {
   const DanhSach({Key? key}) : super(key: key);
@@ -22,53 +23,6 @@ class _DanhSachState extends State<DanhSach> {
   List<DailyTransactions> _sections = [];
   bool _loading = true;
   String? _error;
-
-  /// Map title -> HEX color (bao gồm '#')
-  final Map<String, String> titleColors = {
-    'Mua sắm': '#448AFF',
-    'Đồ ăn': '#FFB74D',
-    'Điện thoại': '#3F51B5',
-    'Giải trí': '#9C27B0',
-    'Giáo dục': '#FFC107',
-    'Sắc đẹp': '#FF4081',
-    'Thể thao': '#4CAF50',
-    'Xã hội': '#009688',
-    'Vận tải': '#795548',
-    'Quần áo': '#FF5722',
-    'Xe hơi': '#9E9E9E',
-    'Rượu bia': '#F44336',
-    'Thuốc lá': '#757575',
-    'Thiết bị': '#03A9F4',
-    'Du lịch': '#00BCD4',
-    'Sức khỏe': '#69F0AE',
-    'Thú cưng': '#7C4DFF',
-    'Sửa chữa': '#CDDC39',
-    'Nhà ở': '#607D8B',
-    'Quà tặng': '#F44336',
-    'Quyên góp': '#8BC34A',
-    'Vé số': '#FF7043',
-    'Đồ ăn nhẹ': '#FF9800',
-    'Trẻ em': '#FFEB3B',
-    'Rau củ': '#B2FF59',
-    'Hoa quả': '#E91E63',
-    'Hóa đơn': '#2196F3',
-    'Khác': '#9E9E9E',
-    'Lương': '#4CAF50',         // Green
-    'Đầu tư': '#448AFF',        // BlueAccent
-    'Giải thưởng': '#FFC107',   // Amber
-    'Lì xì': '#F44336',         // RedAccent
-    'Làm thêm': '#673AB7',      // DeepPurple
-  };
-
-  Color hexToColor(String hex) {
-    if (!hex.startsWith('#')) hex = '#$hex';
-    var cleaned = hex.replaceAll('#', '');
-    if (cleaned.length != 6 && cleaned.length != 8) {
-      throw FormatException('Mã màu không hợp lệ: $hex');
-    }
-    if (cleaned.length == 6) cleaned = 'FF$cleaned'; // thêm alpha nếu thiếu
-    return Color(int.parse(cleaned, radix: 16));
-  }
 
   @override
   void initState() {
@@ -259,6 +213,7 @@ class _DanhSachState extends State<DanhSach> {
                                   date: date,
                                   icon: getIconData(e.icon),
                                   note: e.moTa,
+                                  color: hexToColor(e.color ?? '#9E9E9E')
                                 ),
                               ),
                             ),

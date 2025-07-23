@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:appquanlychitieu/utils/icon_helper.dart';
+import 'package:appquanlychitieu/utils/category_colors.dart';
 
 class ThemChiTieu extends StatefulWidget {
   const ThemChiTieu({super.key});
@@ -24,39 +26,6 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
       });
     });
   }
-
-  /// 🎨 HEX map cho từng mục
-  final Map<String, String> iconColors = {
-    'Mua sắm': '#448AFF',
-    'Đồ ăn': '#FFB74D',
-    'Điện thoại': '#3F51B5',
-    'Giải trí': '#9C27B0',
-    'Giáo dục': '#FFC107',
-    'Sắc đẹp': '#FF4081',
-    'Thể thao': '#4CAF50',
-    'Xã hội': '#009688',
-    'Vận tải': '#795548',
-    'Quần áo': '#FF5722',
-    'Xe hơi': '#9E9E9E',
-    'Rượu bia': '#F44336',
-    'Thuốc lá': '#757575',
-    'Thiết bị': '#03A9F4',
-    'Du lịch': '#00BCD4',
-    'Sức khỏe': '#69F0AE',
-    'Thú cưng': '#7C4DFF',
-    'Sửa chữa': '#CDDC39',
-    'Nhà ở': '#607D8B',
-    'Quà tặng': '#F44336',
-    'Quyên góp': '#8BC34A',
-    'Vé số': '#FF7043',
-    'Đồ ăn nhẹ': '#FF9800',
-    'Trẻ em': '#FFEB3B',
-    'Rau củ': '#B2FF59',
-    'Hoa quả': '#E91E63',
-    'Hóa đơn': '#2196F3',
-    'Khác': '#9E9E9E',
-  };
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -142,14 +111,9 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
     );
   }
 
-  /// ✅ Hàm convert HEX -> Color
-  Color _hexToColor(String hex) {
-    return Color(int.parse(hex.replaceFirst('#', '0xFF')));
-  }
-
   Expanded buildIconButton(int index, IconData icon, String label) {
-    final hex = iconColors[label] ?? '#9E9E9E';
-    final color = _hexToColor(hex);
+    final hex = titleColors[label] ?? '#9E9E9E';
+    final color = hexToColor(hex);
 
     return Expanded(
       child: Column(
