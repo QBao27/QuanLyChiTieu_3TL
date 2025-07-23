@@ -753,48 +753,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 16),
 
-                    // Remember Me & Forgot Password
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: _rememberMe,
-                              onChanged: (value) {
-                                setState(() {
-                                  _rememberMe = value ?? false;
-                                });
-                              },
-                              activeColor: Colors.amber,
-                              checkColor: Colors.black,
-                            ),
-                            const Text(
-                              'Ghi nhớ tôi',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (
-                                    context) => const ForgotPasswordScreen(),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            'Quên mật khẩu?',
-                            style: TextStyle(
-                              color: Colors.amber,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+
+
+
 
                     const SizedBox(height: 32),
 
@@ -863,32 +824,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: 24),
 
-                    // Social Login Buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _socialButton(
-                            'Google',
-                            Icons.g_mobiledata,
-                            Colors.red,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _socialButton(
-                            'Facebook',
-                            Icons.facebook,
-                            Colors.blue,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 48),
-
-                    // Sign Up Link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
