@@ -411,8 +411,8 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
 
 
           final filtered = allData.where((e) {
-            if (selectedType == 'Chi tiêu' && e.loaiGiaoDich != 'Chi') return false;
-            if (selectedType == 'Thu nhập' && e.loaiGiaoDich != 'Thu') return false;
+            if (selectedType == 'Chi tiêu' && e.loaiGiaoDich.toLowerCase() != 'chi') return false;
+            if (selectedType == 'Thu nhập' && e.loaiGiaoDich.toLowerCase() != 'thu') return false;
 
             final date = DateTime.parse(e.ngayGiaoDich);
             if (isMonthSelected) {

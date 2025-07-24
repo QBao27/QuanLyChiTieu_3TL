@@ -57,7 +57,7 @@ import '../../models/ThongKe/ThongKe_Models.dart';
 
 class GiaoDichService {
   // ✅ Đây mới đúng với Controller của bạn:
-  final String _baseUrl = 'http://localhost:5112/api/ThongKe';
+  final String _baseUrl = 'http://10.0.2.2:5112/api/ThongKe';
 
   Future<List<GiaoDich>> getGiaoDichByTaiKhoan(int idTaiKhoan) async {
     final url = '$_baseUrl/by-tai-khoan/$idTaiKhoan';
