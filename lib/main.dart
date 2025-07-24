@@ -1,33 +1,28 @@
 import 'package:appquanlychitieu/views/DangKy.dart' show SignUpScreen;
 import 'package:appquanlychitieu/views/DangNhap.dart';
 import 'package:appquanlychitieu/views/HoSo.dart';
+import 'package:appquanlychitieu/views/TrangChu/TrangChu.dart';
+import 'package:appquanlychitieu/views/ThongKe/thongke_screen.dart';
+import 'package:appquanlychitieu/views/Lich/Lich.dart';
+import 'package:appquanlychitieu/views/TaiKhoan/TaiKhoan.dart';
+import 'package:appquanlychitieu/ID_TaiKhoan/user_preferences.dart';  // Import cái này!
 import 'package:flutter/material.dart';
-import 'views/TrangChu/TrangChu.dart';
-import 'views/ThongKe/thongke_screen.dart';
-import 'views/Lich/Lich.dart';
-import 'views/TaiKhoan/TaiKhoan.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
-import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // khởi tạo data format cho tất cả locales (nếu bạn muốn dùng nhiều locale)
   await initializeDateFormatting();
-  // hoặc chỉ riêng vi: await initializeDateFormatting('vi', null);
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'QuanLyChiTieu_3TL',
-      theme: ThemeData(
-      ),
+      theme: ThemeData(),
       home: LoginScreen(),
     );
   }
@@ -43,16 +38,37 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
 
-  final List<Widget> pages = [
-    TrangChu(),
-    ThongKeScreen(idTaiKhoan: 1,),
-    Lich(),
-    TaiKhoanScreen()
+  int? userId; // Biến để lưu ID lấy từ SharedPreferences
 
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadUserId();
+  }
+
+  Future<void> _loadUserId() async {
+    final id = await UserPreferences.getUserId();
+    setState(() {
+      userId = id;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Nếu chưa có userId => chờ
+    if (userId == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final pages = [
+      const TrangChu(),
+      ThongKeScreen(idTaiKhoan: userId!), // Truyền đúng ID đã lấy!
+      const Lich(),
+      const TaiKhoanScreen(),
+    ];
+
     return Scaffold(
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
