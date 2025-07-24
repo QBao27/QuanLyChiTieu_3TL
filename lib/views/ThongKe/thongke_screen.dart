@@ -348,6 +348,11 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
   final PageController _pageController = PageController();
 
   final GiaoDichService _service = GiaoDichService();
+
+  final ScrollController _monthScrollController = ScrollController();
+  final ScrollController _yearScrollController = ScrollController();
+
+
   late Future<List<GiaoDich>> _futureGiaoDich;
 
   bool isMonthSelected = true;
@@ -371,15 +376,23 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
     super.initState();
     final now = DateTime.now();
     yearOptions = [
-      for (int year = 2020; year <= now.year; year++) 'Năm $year'
+      for (int year = 2000; year <= now.year; year++) 'Năm $year'
     ];
-    _futureGiaoDich = _service.getGiaoDichByTaiKhoan(widget.idTaiKhoan);
+    _futureGiaoDich = _service.getGiaoDichByTaiKhoan(widget.idTaiKhoan);_scrollToSelected;
   }
 
   int getDaysInMonth(int month, int year) {
     return DateTime(year, month + 1, 0).day;
   }
 
+  void _scrollToSelected(ScrollController controller, int index) {
+    const itemWidth = 100.0; // 👈 bạn tự đặt cố định
+    controller.animateTo(
+      index * itemWidth,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -394,8 +407,21 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
             return Center(child: Text('Lỗi: ${snapshot.error}'));
           }
 
-          final List<GiaoDich> allData = snapshot.data ?? [];
+          final now = DateTime.now();
+          if (isMonthSelected) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollToSelected(_monthScrollController, now.month - 1);
+            });
+          } else {
+            final index = yearOptions.indexOf('Năm ${now.year}');
+            if (index >= 0) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _scrollToSelected(_yearScrollController, index);
+              });
+            }
+          }
 
+          final List<GiaoDich> allData = snapshot.data ?? [];
 
 
           // Lấy ra các tháng/năm có dữ liệu
@@ -432,14 +458,16 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
                 const SizedBox(height: 20),
                 if (isMonthSelected)
                   TabList(
-                    options: monthOptions, // ✅ luôn đầy đủ!
+                    options: monthOptions,
                     selectedValue: selectedMonth,
+                    scrollController: _monthScrollController,
                     onTap: (value) => setState(() => selectedMonth = value),
                   )
                 else
                   TabList(
-                    options: yearOptions, // ✅ luôn đầy đủ!
+                    options: yearOptions,
                     selectedValue: selectedYear,
+                    scrollController: _yearScrollController,
                     onTap: (value) => setState(() => selectedYear = value),
                   ),
                 const SizedBox(height: 50),
@@ -462,11 +490,13 @@ class _ThongKeScreenState extends State<ThongKeScreen> {
                   ? TabList(
                 options: monthOptions,
                 selectedValue: selectedMonth,
+                scrollController: _monthScrollController,
                 onTap: (value) => setState(() => selectedMonth = value),
               )
                   : TabList(
                 options: yearOptions,
                 selectedValue: selectedYear,
+                scrollController: _yearScrollController,
                 onTap: (value) => setState(() => selectedYear = value),
               ),
 
