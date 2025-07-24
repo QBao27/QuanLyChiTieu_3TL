@@ -680,8 +680,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context); // hoặc chuyển sang trang login
-      } else {
+
+        // Chuyển sang trang đăng nhập
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      }
+      else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("❌ $error"),
