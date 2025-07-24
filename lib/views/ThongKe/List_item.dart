@@ -85,22 +85,75 @@ class ListTileItem extends StatelessWidget {
 
   IconData _mapIcon(String? icon) {
     switch (icon) {
-      case 'savings':
-        return Icons.savings;
+      case 'shopping_cart_outlined':
+        return Icons.shopping_cart_outlined;
+      case 'restaurant_outlined':
+        return Icons.restaurant_outlined;
+      case 'phone_android_outlined':
+        return Icons.phone_android_outlined;
+      case 'headset_mic_rounded':
+        return Icons.headset_mic_rounded;
+      case 'book_online':
+        return Icons.book_online;
+      case 'brush_outlined':
+        return Icons.brush_outlined;
+      case 'directions_bike_outlined':
+        return Icons.directions_bike_outlined;
+      case 'people_alt_outlined':
+        return Icons.people_alt_outlined;
+      case 'directions_bus_outlined':
+        return Icons.directions_bus_outlined;
+      case 'checkroom_rounded':
+        return Icons.checkroom_rounded;
+      case 'directions_car_filled_outlined':
+        return Icons.directions_car_filled_outlined;
+      case 'liquor_outlined':
+        return Icons.liquor_outlined;
+      case 'all_inbox_outlined':
+        return Icons.all_inbox_outlined;
+      case 'computer_outlined':
+        return Icons.computer_outlined;
+      case 'flight_outlined':
+        return Icons.flight_outlined;
+      case 'health_and_safety_outlined':
+        return Icons.health_and_safety_outlined;
+      case 'pets_outlined':
+        return Icons.pets_outlined;
+      case 'build_outlined':
+        return Icons.build_outlined;
+      case 'home_outlined':
+        return Icons.home_outlined;
+      case 'card_giftcard_outlined':
+        return Icons.card_giftcard_outlined;
+      case 'favorite_border_outlined':
+        return Icons.favorite_border_outlined;
+      case 'confirmation_num_outlined':
+        return Icons.confirmation_num_outlined;
+      case 'fastfood_outlined':
+        return Icons.fastfood_outlined;
+      case 'child_care_outlined':
+        return Icons.child_care_outlined;
+      case 'eco_outlined':
+        return Icons.eco_outlined;
+      case 'local_florist_outlined':
+        return Icons.local_florist_outlined;
+      case 'receipt_outlined':
+        return Icons.receipt_outlined;
+      case 'more_horiz_outlined':
+        return Icons.more_horiz_outlined;
       case 'attach_money':
         return Icons.attach_money;
-      case 'business_center':
-        return Icons.business_center;
-      case 'flight':
-        return Icons.flight;
-      case 'book':
-        return Icons.book;
-      case 'devices':
-        return Icons.devices;
+      case 'trending_up_outlined':
+        return Icons.trending_up_outlined;
+      case 'money_outlined':
+        return Icons.money_outlined;
+      case 'work_history_outlined':
+        return Icons.work_history_outlined;
       default:
-        return Icons.category;
+        return Icons.help_outline; // hoặc Icons.category nếu bạn thích
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
