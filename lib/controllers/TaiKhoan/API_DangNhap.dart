@@ -56,7 +56,7 @@ class ApiService {
       uri,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'email': email,
+        'EmailOrPhone': email,
         'MatKhau': password,
       }),
     );

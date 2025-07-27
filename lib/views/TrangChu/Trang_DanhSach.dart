@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:appquanlychitieu/models/TrangChu/GiaoDich.dart';
 import 'package:appquanlychitieu/controllers/TrangChu/API_GiaoDich.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Trang_ChiTiet.dart';
 import 'package:appquanlychitieu/utils/icon_helper.dart';
 import 'package:appquanlychitieu/utils/category_colors.dart';
@@ -31,6 +32,8 @@ class _DanhSachState extends State<DanhSach> {
   }
 
   Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final int userId = prefs.getInt('userId') ?? 1;
     setState(() {
       _loading = true;
       _error = null;
@@ -38,7 +41,7 @@ class _DanhSachState extends State<DanhSach> {
     try {
       final report = await _api
           .getMonthlyReport(
-        idTaiKhoan: 1,
+        idTaiKhoan: userId,
         month: _selectedDate.month,
         year: _selectedDate.year,
       )
@@ -203,20 +206,63 @@ class _DanhSachState extends State<DanhSach> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => DetailPage(
-                                  title: e.tenDanhMuc,
-                                  type: e.loai,
-                                  amount: e.soTien.toInt(),
-                                  date: date,
-                                  icon: getIconData(e.icon),
-                                  note: e.moTa,
-                                  color: hexToColor(e.color ?? '#9E9E9E')
+                            onTap: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DetailPage(
+                                    title: e.tenDanhMuc,
+                                    type: e.loai,
+                                    amount: e.soTien.toInt(),
+                                    date: date,
+                                    icon: getIconData(e.icon),
+                                    note: e.moTa,
+                                    color: hexToColor(e.color ?? '#9E9E9E'),
+                                    id: e.id,
+                                  ),
                                 ),
-                              ),
-                            ),
+                              );
+
+                              if (result == true) {
+                                await _loadData(); // load lại dữ liệu nếu sửa
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Row(
+                                      children: const [
+                                        Icon(Icons.check_circle, color: Colors.white),
+                                        SizedBox(width: 8),
+                                        Expanded(child: Text('Cập nhật giao dịch thành công.')),
+                                      ],
+                                    ),
+                                    backgroundColor: Colors.green,
+                                    duration: Duration(seconds: 2),
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    margin: EdgeInsets.all(16),
+                                  ),
+                                );
+                              }
+
+                              if (result == 'deleted') {
+                                await _loadData(); // load lại dữ liệu nếu xóa
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Row(
+                                      children: const [
+                                        Icon(Icons.check_circle, color: Colors.white),
+                                        SizedBox(width: 8),
+                                        Expanded(child: Text('Đã xóa giao dịch thành công.')),
+                                      ],
+                                    ),
+                                    backgroundColor: Colors.green,
+                                    duration: Duration(seconds: 2),
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    margin: EdgeInsets.all(16),
+                                  ),
+                                );
+                              }
+                            },
                           );
                         }).toList(),
                         const Divider(),

@@ -2,30 +2,62 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:appquanlychitieu/utils/icon_helper.dart';
 import 'package:appquanlychitieu/utils/category_colors.dart';
+import 'package:appquanlychitieu/controllers/TrangChu/API_GiaoDich.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../models/TrangChu/GiaoDich.dart';
 
 class ThemThuNhap extends StatefulWidget {
-  const ThemThuNhap({super.key});
+  const ThemThuNhap({Key? key}) : super(key: key);
 
   @override
-  State<ThemThuNhap> createState() => _ThemThuNhapState();
+  _ThemThuNhapState createState() => _ThemThuNhapState();
 }
 
 class _ThemThuNhapState extends State<ThemThuNhap> {
   int selectedIndex = -1;
 
-  void _onIconPressed(int idx) {
+  final iconList = [
+    Icons.attach_money,
+    Icons.trending_up_outlined,
+    Icons.card_giftcard_outlined,
+    Icons.money_outlined,
+    Icons.work_history_outlined,
+    Icons.more_horiz_outlined,
+  ];
+  final labelList = [
+    'Lương', 'Đầu tư', 'Giải thưởng', 'Lì xì', 'Làm thêm', 'Khác',
+  ];
+  final idDanhMucList = [33, 34, 35, 36, 37, 32]; // 'Khác' có id là 32
+
+  Future<void> _onIconPressed(int idx) async {
     setState(() => selectedIndex = idx);
-    showModalBottomSheet(
+
+    // Lấy userId từ SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId') ?? 1;
+
+    final hex = titleColors[labelList[idx]] ?? '#9E9E9E';
+
+    final added = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const _CustomKeyboardSheet(),
-    ).whenComplete(() {
-      setState(() {
-        selectedIndex = -1;
-      });
-    });
+      builder: (_) => _CustomKeyboardSheet(
+        idTaiKhoan: userId,
+        idDanhMuc: idDanhMucList[idx],
+        colorHex: hex,
+        loaiThuChi: 'thu',
+      ),
+    );
+
+    if (added == true) {
+      Navigator.of(context).pop(true);
+    }
+
+    setState(() => selectedIndex = -1);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,25 +71,9 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
               padding: const EdgeInsets.only(bottom: 12),
               child: Row(
                 children: List.generate(3, (col) {
-                  final index = start + col;
-                  final iconList = [
-                    Icons.attach_money,
-                    Icons.trending_up_outlined,
-                    Icons.card_giftcard_outlined,
-                    Icons.money_outlined,
-                    Icons.work_history_outlined,
-                    Icons.more_horiz_outlined,
-                  ];
-                  final labelList = [
-                    'Lương',
-                    'Đầu tư',
-                    'Giải thưởng',
-                    'Lì xì',
-                    'Làm thêm',
-                    'Khác',
-                  ];
-                  return index < iconList.length
-                      ? buildIconButton(index, iconList[index], labelList[index])
+                  final idx = start + col;
+                  return idx < iconList.length
+                      ? buildIconButton(idx, iconList[idx], labelList[idx])
                       : const Expanded(child: SizedBox());
                 }),
               ),
@@ -71,14 +87,13 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
   Expanded buildIconButton(int index, IconData icon, String label) {
     final hex = titleColors[label] ?? '#9E9E9E';
     final color = hexToColor(hex);
-
     return Expanded(
       child: Column(
         children: [
           IconButton(
             style: IconButton.styleFrom(
               backgroundColor: selectedIndex == index
-                  ? Colors.yellow[700]
+                  ? Colors.green[400]
                   : color.withOpacity(0.2),
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(15),
@@ -94,11 +109,19 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
   }
 }
 
-/// =============================
-/// Custom Keyboard Bottom Sheet
-/// =============================
 class _CustomKeyboardSheet extends StatefulWidget {
-  const _CustomKeyboardSheet({Key? key}) : super(key: key);
+  final int idTaiKhoan;
+  final int idDanhMuc;
+  final String colorHex;
+  final String loaiThuChi;
+
+  const _CustomKeyboardSheet({
+    Key? key,
+    required this.idTaiKhoan,
+    required this.idDanhMuc,
+    required this.colorHex,
+    required this.loaiThuChi,
+  }) : super(key: key);
 
   @override
   State<_CustomKeyboardSheet> createState() => _CustomKeyboardSheetState();
@@ -130,6 +153,84 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
     });
   }
 
+  Future<void> _submitGiaoDich() async {
+    final soTien = double.parse(amount.replaceAll('.', ''));
+    if (soTien <= 0) {
+      FocusScope.of(context).unfocus();
+      Navigator.of(context).pop(false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: const [
+              Icon(Icons.error, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(child: Text('Vui lòng nhập giá!')),
+            ],
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+      return;
+    }
+    final dateOnly = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final moTa = _noteCtr.text.trim().isEmpty ? null : _noteCtr.text.trim();
+    final dto = ThemGiaoDichDto(
+      loaiGiaoDich: widget.loaiThuChi,
+      soTien: soTien,
+      ngayGiaoDich: dateOnly,
+      moTa: moTa,
+      idDanhMuc: widget.idDanhMuc,
+      color: widget.colorHex,
+    );
+
+    try {
+      await ApiService().addGiaoDich(widget.idTaiKhoan, dto);
+      if (!mounted) return;
+      FocusScope.of(context).unfocus();
+      Navigator.of(context).pop(false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: const [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(child: Text('Thêm giao dịch thành công!')),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      FocusScope.of(context).unfocus();
+      Navigator.of(context).pop(false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: const [
+              Icon(Icons.error, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(child: Text('Thêm thất bại!')),
+            ],
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -148,12 +249,11 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                 ElevatedButton(
                   onPressed: () {
                     FocusScope.of(context).unfocus();
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(false);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey[200],
                     foregroundColor: Colors.black,
-                    textStyle: const TextStyle(fontSize: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -161,13 +261,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                   child: const Text('Hủy'),
                 ),
                 const Spacer(),
-                Text(
-                  amount,
-                  style: const TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(amount, style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold)),
               ],
             ),
             const SizedBox(height: 8),
@@ -190,23 +284,9 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                 crossAxisCount: 4,
                 mainAxisSpacing: 8,
                 crossAxisSpacing: 8,
-                children: [
-                  for (var k in [
-                    '7',
-                    '8',
-                    '9',
-                    '⌫',
-                    '4',
-                    '5',
-                    '6',
-                    '✓',
-                    '1',
-                    '2',
-                    '3',
-                    '0',
-                  ])
-                    _buildKey(k),
-                ],
+                children: ['7','8','9','⌫','4','5','6','✓','1','2','3','0']
+                    .map(_buildKey)
+                    .toList(),
               ),
             ),
           ],
@@ -218,22 +298,18 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
   Widget _buildKey(String label) {
     final isCheck = label == '✓';
     final isBackspace = label == '⌫';
-
     return ElevatedButton(
       onPressed: () {
-        switch (label) {
-          case '⌫':
-            _backspace();
-            break;
-          case '✓':
-            Navigator.of(context).pop();
-            break;
-          default:
-            if (RegExp(r"^\d$|'$").hasMatch(label)) _append(label);
+        if (isBackspace) {
+          _backspace();
+        } else if (isCheck) {
+          _submitGiaoDich(); // <-- Gọi API khi nhấn ✓
+        } else {
+          _append(label);
         }
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: isCheck ? Colors.yellow[700] : Colors.grey[200],
+        backgroundColor: isCheck ? Colors.green[400] : Colors.grey[200],
         foregroundColor: Colors.black,
         textStyle: const TextStyle(fontSize: 22),
         minimumSize: const Size(50, 50),

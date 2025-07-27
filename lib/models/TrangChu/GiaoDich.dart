@@ -97,3 +97,34 @@ class MonthlyReport {
     );
   }
 }
+
+//5. Model thêm
+class ThemGiaoDichDto {
+  final String loaiGiaoDich;
+  final double soTien;
+  final String ngayGiaoDich;
+  final String? moTa;
+  final int idDanhMuc;
+  final String? color;
+
+  ThemGiaoDichDto({
+    required this.loaiGiaoDich,
+    required this.soTien,
+    required this.ngayGiaoDich,
+    required this.idDanhMuc,
+    this.moTa,
+    this.color,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'loaiGiaoDich': loaiGiaoDich,
+      'soTien': soTien,
+      'ngayGiaoDich': ngayGiaoDich,
+      'moTa': moTa,
+      'idDanhMuc': idDanhMuc,
+      'color': color,
+    };
+  }
+}
+
