@@ -36,6 +36,28 @@ class _DetailPageState extends State<DetailPage> {
   final _formatterDate = DateFormat('d MMM, y', 'vi_VN');
   final _formatterNumber = NumberFormat('#,##0', 'vi_VN');
 
+  Future<void> _updateGiaoDich() async {
+    print('🔄 Gọi cập nhật với: ID=${widget.id}, Số tiền=$_currentAmount, Ghi chú="${_noteController.text.trim()}"');
+    try {
+      await api.updateGiaoDich(
+        widget.id,
+        _currentAmount.toDouble(),
+        _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
+      );
+      Navigator.pop(context, true);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cập nhật thất bại: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+
+    }
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -72,15 +94,16 @@ class _DetailPageState extends State<DetailPage> {
       builder: (_) => EditAmountKeyboard(
         initialAmount: _currentAmount,
         initialNote: _noteController.text,
-        onConfirm: (newAmount, newNote) {
-          setState(() {
+          onConfirm: (newAmount, newNote) async {
             _currentAmount = newAmount;
             _noteController.text = newNote;
-          });
-        },
+            setState(() {}); // cập nhật UI sau khi gán
+            await _updateGiaoDich(); // không nên await trong setState
+          }
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +192,7 @@ class _DetailPageState extends State<DetailPage> {
                   if (confirm == true) {
                     try {
                       await api.deleteGiaoDich(widget.id); // ✅ Gọi hàm xóa từ API
-                      Navigator.of(context).pop(true); // ✅ Trả về true để trang trước reload
+                      Navigator.pop(context, 'deleted'); // ✅ Trả về true để trang trước reload
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -351,8 +374,35 @@ class _EditAmountKeyboardState extends State<EditAmountKeyboard> {
         if (isBackspace) {
           _backspace();
         } else if (isCheck) {
-          final newAmount = int.parse(amount.replaceAll('.', ''));
-          widget.onConfirm(newAmount, _noteCtr.text.trim());
+          final newAmount = NumberFormat.decimalPattern('vi').parse(amount).toInt();
+          final newNote = _noteCtr.text.trim();
+          if (newAmount <= 0) {
+            FocusScope.of(context).unfocus();
+            Navigator.of(context).pop(false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Số tiền phải lớn hơn 0'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+
+          // ✅ Kiểm tra nếu không thay đổi gì thì chỉ đóng modal
+          // ✅ In chi tiết giá trị cũ và mới
+          print('🔎 Số tiền cũ: ${widget.initialAmount}, Số tiền mới: $newAmount');
+          print('🔎 Ghi chú cũ: "${widget.initialNote.trim()}", Ghi chú mới: "$newNote"');
+
+          if (newAmount == widget.initialAmount &&
+              newNote == widget.initialNote.trim()) {
+            print('⚠️ Không có thay đổi nào, đóng modal.');
+            Navigator.of(context).pop();
+            return;
+          }
+
+          // ✅ Truyền callback
+          widget.onConfirm(newAmount, newNote);
+
           Navigator.of(context).pop();
         } else {
           _append(label);

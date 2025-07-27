@@ -224,8 +224,27 @@ class _DanhSachState extends State<DanhSach> {
                               );
 
                               if (result == true) {
-                                // ✅ Gọi lại hàm load dữ liệu
-                                await _loadData(); // hoặc setState + gọi API
+                                await _loadData(); // load lại dữ liệu nếu sửa
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Row(
+                                      children: const [
+                                        Icon(Icons.check_circle, color: Colors.white),
+                                        SizedBox(width: 8),
+                                        Expanded(child: Text('Cập nhật giao dịch thành công.')),
+                                      ],
+                                    ),
+                                    backgroundColor: Colors.green,
+                                    duration: Duration(seconds: 2),
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    margin: EdgeInsets.all(16),
+                                  ),
+                                );
+                              }
+
+                              if (result == 'deleted') {
+                                await _loadData(); // load lại dữ liệu nếu xóa
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Row(
@@ -236,10 +255,10 @@ class _DanhSachState extends State<DanhSach> {
                                       ],
                                     ),
                                     backgroundColor: Colors.green,
-                                    duration: const Duration(seconds: 2),
+                                    duration: Duration(seconds: 2),
                                     behavior: SnackBarBehavior.floating,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    margin: const EdgeInsets.all(16),
+                                    margin: EdgeInsets.all(16),
                                   ),
                                 );
                               }
