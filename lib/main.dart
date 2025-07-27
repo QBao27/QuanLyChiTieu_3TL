@@ -65,7 +65,6 @@ class _HomePageState extends State<HomePage> {
     final pages = [
       const TrangChu(),
       ThongKeScreen(idTaiKhoan: userId!), // Truyền đúng ID đã lấy!
-      const Lich(),
       const TaiKhoanScreen(),
     ];
 
@@ -84,7 +83,6 @@ class _HomePageState extends State<HomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Thống kê'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Báo Cáo'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Tài khoản'),
         ],
       ),
