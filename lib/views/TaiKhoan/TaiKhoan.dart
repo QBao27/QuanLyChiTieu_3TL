@@ -108,10 +108,7 @@ class _TaiKhoanScreenState extends State<TaiKhoanScreen> {
           ),
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.grey.shade700),
-          onPressed: () => Navigator.pop(context),
-        ),
+
       ),
       body: currentUser == null
           ? const Center(
