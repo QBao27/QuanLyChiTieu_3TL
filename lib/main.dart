@@ -1,3 +1,4 @@
+import 'package:appquanlychitieu/services/local_storage_service.dart';
 import 'package:appquanlychitieu/views/DangKy.dart' show SignUpScreen;
 import 'package:appquanlychitieu/views/DangNhap.dart';
 import 'package:appquanlychitieu/views/HoSo.dart';
@@ -38,7 +39,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
 
-  int? userId; // Biến để lưu ID lấy từ SharedPreferences
+  int? _userId; // Biến để lưu ID lấy từ SharedPreferences
 
   @override
   void initState() {
@@ -47,16 +48,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadUserId() async {
-    final id = await UserPreferences.getUserId();
+    final user = await LocalStorageService.getUser();
+    final userId = user?.id;
     setState(() {
-      userId = id;
+      _userId = userId;
     });
+    print("ID khi đăng nhập: ${_userId}");
   }
   // Them ...
   @override
   Widget build(BuildContext context) {
     // Nếu chưa có userId => chờ
-    if (userId == null) {
+    if (_userId == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -64,7 +67,7 @@ class _HomePageState extends State<HomePage> {
 
     final pages = [
       const TrangChu(),
-      ThongKeScreen(idTaiKhoan: userId!), // Truyền đúng ID đã lấy!
+      ThongKeScreen(idTaiKhoan: _userId!), // Truyền đúng ID đã lấy!
       const TaiKhoanScreen(),
     ];
 

@@ -6,6 +6,7 @@ import 'package:appquanlychitieu/controllers/TrangChu/API_GiaoDich.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/TrangChu/GiaoDich.dart';
+import '../../services/local_storage_service.dart';
 
 class ThemThuNhap extends StatefulWidget {
   const ThemThuNhap({Key? key}) : super(key: key);
@@ -16,6 +17,21 @@ class ThemThuNhap extends StatefulWidget {
 
 class _ThemThuNhapState extends State<ThemThuNhap> {
   int selectedIndex = -1;
+  int? _userId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserId();
+  }
+
+  Future<void> _loadUserId() async {
+    final user = await LocalStorageService.getUser();
+    final userId = user?.id;
+    setState(() {
+      _userId = userId;
+    });
+  }
 
   final iconList = [
     Icons.attach_money,
@@ -33,9 +49,6 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
   Future<void> _onIconPressed(int idx) async {
     setState(() => selectedIndex = idx);
 
-    // Lấy userId từ SharedPreferences
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId') ?? 1;
 
     final hex = titleColors[labelList[idx]] ?? '#9E9E9E';
 
@@ -44,7 +57,7 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _CustomKeyboardSheet(
-        idTaiKhoan: userId,
+        idTaiKhoan: _userId ?? 1,
         idDanhMuc: idDanhMucList[idx],
         colorHex: hex,
         loaiThuChi: 'thu',

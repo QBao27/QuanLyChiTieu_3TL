@@ -5,6 +5,7 @@ import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:appquanlychitieu/models/TrangChu/GiaoDich.dart';
 import 'package:appquanlychitieu/controllers/TrangChu/API_GiaoDich.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/local_storage_service.dart';
 import 'Trang_ChiTiet.dart';
 import 'package:appquanlychitieu/utils/icon_helper.dart';
 import 'package:appquanlychitieu/utils/category_colors.dart';
@@ -24,6 +25,7 @@ class _DanhSachState extends State<DanhSach> {
   List<DailyTransactions> _sections = [];
   bool _loading = true;
   String? _error;
+  int? _userId;
 
   @override
   void initState() {
@@ -32,16 +34,18 @@ class _DanhSachState extends State<DanhSach> {
   }
 
   Future<void> _loadData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final int userId = prefs.getInt('userId') ?? 1;
+    final user = await LocalStorageService.getUser();
+    final userId = user?.id;
     setState(() {
       _loading = true;
       _error = null;
+      _userId = userId;
     });
+    print("User ID: $_userId");
     try {
       final report = await _api
           .getMonthlyReport(
-        idTaiKhoan: userId,
+        idTaiKhoan: _userId ?? 1,
         month: _selectedDate.month,
         year: _selectedDate.year,
       )
