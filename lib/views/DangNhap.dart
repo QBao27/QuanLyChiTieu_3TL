@@ -457,10 +457,27 @@
 //   }
 // }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../controllers/TaiKhoan/API_DangNhap.dart';
 import '../main.dart';
+import '../models/TaiKhoan/TaiKhoan.dart';
+import '../services/local_storage_service.dart';
 import 'Quenmatkhau.dart';
 import 'DangKy.dart';
 import 'package:http/http.dart' as http;
@@ -480,36 +497,31 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
   bool _isLoading = false;
-
-  Future<void> login() async {
-    final url = Uri.parse(
-        "http://10.0.2.2:5000/api/auth/login"); // dùng 10.0.2.2 khi chạy giả lập Android
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "email": _emailController.text,
-        "password": _passwordController.text,
-      }),
-    );
-    // Xử lý response ở đây
-  }
+  User? _user;
 
   @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _loadUser();
   }
+
+  void _loadUser() async {
+    final user = await LocalStorageService.getUser();
+    if (mounted) {
+      setState(() {
+        _user = user;
+      });
+    }
+  }
+
+
+
 
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
-
-      print('Email: ${_emailController.text.trim()}');
-      print('Mật khẩu: ${_passwordController.text.trim()}');
 
       try {
         final user = await ApiService.login(
@@ -522,25 +534,24 @@ class _LoginScreenState extends State<LoginScreen> {
         });
 
         if (user != null) {
-          print('Đăng nhập thành công: ${user.email}');
+          // ✅ Lưu thông tin vào LocalStorageService
+          await LocalStorageService.saveUser(user);
 
-          // 🔐 Lưu userId vào SharedPreferences
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setInt('userId', user.id!);
-          print('Đã lưu userId: ${user.id}');
+          print('✅ Đăng nhập thành công: ${user.email}');
+          print('✅ Đã lưu thông tin user');
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Đăng nhập thành công!'),
+              content: Text("Đăng nhập thành công!"),
               backgroundColor: Colors.green,
             ),
           );
 
-          // Chuyển trang nếu cần
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => HomePage()),
+          );
         } else {
-          print('Đăng nhập thất bại: Sai tài khoản hoặc mật khẩu');
-
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Sai tài khoản hoặc mật khẩu'),
@@ -553,8 +564,6 @@ class _LoginScreenState extends State<LoginScreen> {
           _isLoading = false;
         });
 
-        print('Lỗi trong quá trình đăng nhập: $e');
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Lỗi kết nối: $e'),
@@ -564,8 +573,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
