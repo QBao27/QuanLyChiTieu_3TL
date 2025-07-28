@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
       userId = id;
     });
   }
-
+  // Them ...
   @override
   Widget build(BuildContext context) {
     // Nếu chưa có userId => chờ
