@@ -277,7 +277,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.6,
+      initialChildSize: 0.5,
       maxChildSize: 0.9,
       builder: (_, ctrl) => Container(
         decoration: const BoxDecoration(
