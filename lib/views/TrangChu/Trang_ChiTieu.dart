@@ -8,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/local_storage_service.dart';
 
-
 class ThemChiTieu extends StatefulWidget {
   const ThemChiTieu({super.key});
 
@@ -34,7 +33,6 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
     });
   }
 
-  // 1. Icon, label và id danh mục
   final iconList = [
     Icons.shopping_cart_outlined, Icons.restaurant_outlined,
     Icons.phone_android_outlined, Icons.headset_mic_rounded,
@@ -58,15 +56,11 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
     'Nhà ở','Quà tặng','Quyên góp','Vé số','Đồ ăn nhẹ','Trẻ em',
     'Rau củ','Hoa quả','Hóa đơn','Khác',
   ];
-  // Giờ chạy từ 5 → 32
   final idDanhMucList = List.generate(28, (i) => i + 5);
 
   Future<void> _onIconPressed(int idx) async {
     setState(() => selectedIndex = idx);
-
     final hex = titleColors[labelList[idx]] ?? '#9E9E9E';
-
-    // Hiển thị bottom sheet
     final added = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -77,16 +71,11 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
         colorHex: hex,
       ),
     );
-
-    // Nếu có thay đổi → gọi reload dữ liệu
     if (added == true) {
-      // TODO: Gọi lại loadData hoặc cập nhật UI nếu cần
-      // await _loadData();
+      // TODO: reload data
     }
-
     setState(() => selectedIndex = -1);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -138,9 +127,6 @@ class _ThemChiTieuState extends State<ThemChiTieu> {
   }
 }
 
-/// =============================
-/// Custom Keyboard Bottom Sheet
-/// =============================
 class _CustomKeyboardSheet extends StatefulWidget {
   final int idTaiKhoan;
   final int idDanhMuc;
@@ -159,6 +145,7 @@ class _CustomKeyboardSheet extends StatefulWidget {
 
 class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
   String amount = '0';
+  DateTime _selectedDate = DateTime.now();
   final _noteCtr = TextEditingController();
   final currencyFormat = NumberFormat.decimalPattern('vi');
 
@@ -167,9 +154,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
     if (clean.length >= 10) return;
     setState(() {
       clean = clean == '0' ? x : clean + x;
-      amount = currencyFormat
-          .format(int.parse(clean))
-          .replaceAll(',', '.');
+      amount = currencyFormat.format(int.parse(clean)).replaceAll(',', '.');
     });
   }
 
@@ -181,11 +166,34 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
     }
     clean = clean.substring(0, clean.length - 1);
     setState(() {
-      amount = currencyFormat
-          .format(int.parse(clean))
-          .replaceAll(',', '.');
+      amount = currencyFormat.format(int.parse(clean)).replaceAll(',', '.');
     });
   }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: Colors.yellow[700],       // màu thanh tiêu đề, nút OK/Cancel
+              onPrimary: Colors.white,           // màu chữ trên nền primary
+              onSurface: Colors.black,           // màu chữ trên nền trắng của ngày
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+    }
+  }
+
 
   Future<void> _submitGiaoDich() async {
     final soTien = double.parse(amount.replaceAll('.', ''));
@@ -211,10 +219,8 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
       return;
     }
 
-    final dateOnly = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    final moTa = _noteCtr.text.trim().isEmpty
-        ? null
-        : _noteCtr.text.trim();
+    final dateOnly = DateFormat('yyyy-MM-dd').format(_selectedDate);
+    final moTa = _noteCtr.text.trim().isEmpty ? null : _noteCtr.text.trim();
     final dto = ThemGiaoDichDto(
       loaiGiaoDich: 'chi',
       soTien: soTien,
@@ -228,7 +234,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
       await ApiService().addGiaoDich(widget.idTaiKhoan, dto);
       if (!mounted) return;
       FocusScope.of(context).unfocus();
-      Navigator.of(context).pop(false);
+      Navigator.of(context).pop(true);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -306,17 +312,43 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
               ],
             ),
             const SizedBox(height: 8),
-            TextField(
-              controller: _noteCtr,
-              decoration: InputDecoration(
-                hintText: 'Ghi chú: Nhập ghi chú...',
-                filled: true,
-                fillColor: Colors.grey[200],
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(12),
+            // Row chứa ghi chú và nút chọn ngày
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _noteCtr,
+                    decoration: InputDecoration(
+                      hintText: 'Ghi chú: Nhập ghi chú...',
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(width: 8),
+                InkWell(
+                  onTap: _pickDate,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.yellow[700],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_month_outlined, color: Colors.white),
+                        const SizedBox(width: 4),
+                        Text(DateFormat('dd/MM/yyyy').format(_selectedDate), style: const TextStyle(color: Colors.white),),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             Expanded(
@@ -336,6 +368,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
     );
   }
 
+
   Widget _buildKey(String label) {
     final isCheck = label == '✓';
     final isBackspace = label == '⌫';
@@ -344,7 +377,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
         if (isBackspace) {
           _backspace();
         } else if (isCheck) {
-          _submitGiaoDich(); // <-- Gọi API khi nhấn ✓
+          _submitGiaoDich();
           FocusScope.of(context).unfocus();
         } else {
           _append(label);
