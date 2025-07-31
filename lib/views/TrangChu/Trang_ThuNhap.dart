@@ -49,7 +49,6 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
   Future<void> _onIconPressed(int idx) async {
     setState(() => selectedIndex = idx);
 
-
     final hex = titleColors[labelList[idx]] ?? '#9E9E9E';
 
     final added = await showModalBottomSheet<bool>(
@@ -70,7 +69,6 @@ class _ThemThuNhapState extends State<ThemThuNhap> {
 
     setState(() => selectedIndex = -1);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -144,6 +142,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
   String amount = '0';
   final _noteCtr = TextEditingController();
   final currencyFormat = NumberFormat.decimalPattern('vi');
+  DateTime _selectedDate = DateTime.now();
 
   void _append(String x) {
     String clean = amount.replaceAll('.', '');
@@ -164,6 +163,30 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
     setState(() {
       amount = currencyFormat.format(int.parse(clean)).replaceAll(',', '.');
     });
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: Colors.green,       // màu thanh tiêu đề, nút OK/Cancel
+              onPrimary: Colors.white,           // màu chữ trên nền primary
+              onSurface: Colors.black,           // màu chữ trên nền trắng của ngày
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+    }
   }
 
   Future<void> _submitGiaoDich() async {
@@ -189,7 +212,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
       );
       return;
     }
-    final dateOnly = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final dateOnly = DateFormat('yyyy-MM-dd').format(_selectedDate);
     final moTa = _noteCtr.text.trim().isEmpty ? null : _noteCtr.text.trim();
     final dto = ThemGiaoDichDto(
       loaiGiaoDich: widget.loaiThuChi,
@@ -245,9 +268,10 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.5,
+      initialChildSize: 0.6,
       maxChildSize: 0.9,
       builder: (_, ctrl) => Container(
         decoration: const BoxDecoration(
@@ -257,6 +281,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           children: [
+            // Dòng nút Hủy và số tiền
             Row(
               children: [
                 ElevatedButton(
@@ -267,6 +292,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey[200],
                     foregroundColor: Colors.black,
+                    textStyle: const TextStyle(fontSize: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -274,30 +300,64 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
                   child: const Text('Hủy'),
                 ),
                 const Spacer(),
-                Text(amount, style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold)),
+                Text(
+                  amount,
+                  style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                ),
               ],
             ),
             const SizedBox(height: 8),
-            TextField(
-              controller: _noteCtr,
-              decoration: InputDecoration(
-                hintText: 'Ghi chú: Nhập ghi chú...',
-                filled: true,
-                fillColor: Colors.grey[200],
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(12),
+            // Dòng chứa ô ghi chú và nút chọn ngày
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _noteCtr,
+                    decoration: InputDecoration(
+                      hintText: 'Ghi chú: Nhập ghi chú...',
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(width: 8),
+                InkWell(
+                  onTap: _pickDate,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_month_outlined, color: Colors.white),
+                        const SizedBox(width: 4),
+                        Text(
+                          DateFormat('dd/MM/yyyy').format(_selectedDate),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
+            // Bàn phím số
             Expanded(
               child: GridView.count(
                 controller: ctrl,
                 crossAxisCount: 4,
                 mainAxisSpacing: 8,
                 crossAxisSpacing: 8,
-                children: ['7','8','9','⌫','4','5','6','✓','1','2','3','0']
+                children: ['7', '8', '9', '⌫', '4', '5', '6', '✓', '1', '2', '3', '0']
                     .map(_buildKey)
                     .toList(),
               ),
@@ -308,6 +368,8 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
     );
   }
 
+
+
   Widget _buildKey(String label) {
     final isCheck = label == '✓';
     final isBackspace = label == '⌫';
@@ -316,7 +378,7 @@ class _CustomKeyboardSheetState extends State<_CustomKeyboardSheet> {
         if (isBackspace) {
           _backspace();
         } else if (isCheck) {
-          _submitGiaoDich(); // <-- Gọi API khi nhấn ✓
+          _submitGiaoDich();
         } else {
           _append(label);
         }
