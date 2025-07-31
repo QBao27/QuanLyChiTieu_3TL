@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:appquanlychitieu/models/TrangChu/GiaoDich.dart';
 
-const String baseUrl = "http://localhost:5112/api/giaodich";
+const String baseUrl = "http://10.0.2.2:5112/api/giaodich";
 
 class ApiService {
   /// Lấy báo cáo tháng (summary + transactions)
