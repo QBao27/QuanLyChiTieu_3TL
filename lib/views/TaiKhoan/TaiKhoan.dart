@@ -22,6 +22,7 @@ class _TaiKhoanScreenState extends State<TaiKhoanScreen> {
   bool isLoggedIn = true;
   User? currentUser;
 
+
   @override
   void initState() {
     super.initState();
@@ -288,7 +289,9 @@ class _TaiKhoanScreenState extends State<TaiKhoanScreen> {
     );
   }
 
-
+  String? oldPasswordError;
+  String? newPasswordError;
+  String? confirmPasswordError;
 
   void _showChangePassword() {
     final TextEditingController oldPasswordController = TextEditingController();
@@ -325,11 +328,50 @@ class _TaiKhoanScreenState extends State<TaiKhoanScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                print('👉 Mật khẩu cũ nhập: ${oldPasswordController.text}');
-                print('👉 Mật khẩu mới nhập: ${newPasswordController.text}');
-                print('👉 Xác nhận mật khẩu mới: ${confirmPasswordController.text}');
-                print('👉 currentUser!.matKhau (từ local): ${currentUser?.matKhau}');
+                final oldPassword = oldPasswordController.text.trim();
+                final newPassword = newPasswordController.text.trim();
+                final confirmPassword = confirmPasswordController.text.trim();
 
+                // ✅ Bước 1: Bắt lỗi rỗng
+                if (oldPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Vui lòng nhập đầy đủ thông tin.'),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  );
+                  return; // Dừng lại
+                }
+
+                // ✅ Bước 2: Bắt lỗi chứa khoảng trắng
+                if (oldPassword.contains(' ') || newPassword.contains(' ') || confirmPassword.contains(' ')) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Mật khẩu không được chứa khoảng trắng.'),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  );
+                  return;
+                }
+
+                // ✅ Bước 3: Bắt lỗi độ dài mật khẩu mới
+                if (newPassword.length < 6) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Mật khẩu mới phải có ít nhất 6 ký tự.'),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  );
+                  return;
+                }
+
+                // ✅ Bước 4: Giữ nguyên if cũ
                 if (newPasswordController.text == confirmPasswordController.text) {
                   Navigator.of(context).pop();
                   _changePassword(oldPasswordController.text, newPasswordController.text);
@@ -339,13 +381,12 @@ class _TaiKhoanScreenState extends State<TaiKhoanScreen> {
                       content: const Text('Mật khẩu xác nhận không khớp!'),
                       backgroundColor: Colors.red,
                       behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                   );
                 }
               },
+
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
                 foregroundColor: Colors.white,

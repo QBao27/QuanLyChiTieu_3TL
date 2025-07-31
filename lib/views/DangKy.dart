@@ -821,14 +821,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return 'Vui lòng nhập họ và tên';
                           }
-                          if (value.length < 2) {
+                          if (value.trim().length < 2) {
                             return 'Họ và tên phải có ít nhất 2 ký tự';
+                          }
+                          final regex = RegExp(r'^[a-zA-ZÀ-ỹ\s]+$');
+                          if (!regex.hasMatch(value)) {
+                            return 'Họ và tên không được chứa ký tự đặc biệt hoặc số';
                           }
                           return null;
                         },
+
                       ),
                     ),
 
@@ -873,7 +878,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return 'Vui lòng nhập email';
                           }
                           if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
@@ -925,11 +930,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return 'Vui lòng nhập số điện thoại';
                           }
                           if (value.length < 10) {
                             return 'Số điện thoại phải có ít nhất 10 số';
+                          }
+                          if (value.contains(' ')) {
+                            return 'Số điện thoại không được chứa khoảng trắng';
+                          }
+                          final regex = RegExp(r'^[0-9]+$');
+                          if (!regex.hasMatch(value)) {
+                            return 'Số điện thoại chỉ được chứa số';
                           }
                           return null;
                         },
@@ -988,14 +1000,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return 'Vui lòng nhập mật khẩu';
                           }
                           if (value.length < 6) {
                             return 'Mật khẩu phải có ít nhất 6 ký tự';
                           }
+                          if (value.contains(' ')) {
+                            return 'Mật khẩu không được chứa khoảng trắng';
+                          }
                           return null;
                         },
+
                       ),
                     ),
 
@@ -1051,8 +1067,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return 'Vui lòng xác nhận mật khẩu';
+                          }
+                          if (value.contains(' ')) {
+                            return 'Mật khẩu không được chứa khoảng trắng';
                           }
                           if (value != _passwordController.text) {
                             return 'Mật khẩu không khớp';

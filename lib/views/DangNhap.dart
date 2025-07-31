@@ -683,7 +683,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return 'Vui lòng nhập email hoặc số điện thoại';
                           }
                           return null;
@@ -747,7 +747,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return 'Vui lòng nhập mật khẩu';
                           }
                           if (value.length < 6) {
