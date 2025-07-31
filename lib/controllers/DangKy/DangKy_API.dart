@@ -6,7 +6,7 @@ import '../../models/DangKy/TaiKhoan.dart';
 
 
 class TaiKhoanApi {
-  static const String baseUrl = 'http://localhost:5112/api/DangKy';
+  static const String baseUrl = 'http://10.0.2.2:5112/api/DangKy';
 
   // Đăng ký tài khoản
   static Future<String?> dangKy(TaiKhoanDto dto) async {

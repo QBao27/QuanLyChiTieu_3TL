@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import '../../models/TaiKhoan/TaiKhoan.dart';
 
 class ApiService {
-  static const String _baseUrl = 'http://localhost:5112/api/Auth';
+  static const String _baseUrl = 'http://10.0.2.2:5112/api/Auth';
 
   /// Đăng nhập
   static Future<User?> login(String email, String password) async {
