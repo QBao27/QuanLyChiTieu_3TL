@@ -22,13 +22,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'QuanLyChiTieu_3TL',
       theme: ThemeData(),
       home: LoginScreen(),
     );
   }
 }
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
